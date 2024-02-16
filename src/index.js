@@ -1,17 +1,34 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from "react-dom/client";
+import {
+  Navigate,
+  Route,
+  Routes,
+  unstable_HistoryRouter as HistoryRouter,
+} from "react-router-dom";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+//cấu hình redux
+import { Provider } from "react-redux";
+
+import HomeTemplate from "./templates/HomeTemplate";
+
+//Cấu hình chuyển hướng trang thông qua history
+import { createBrowserHistory } from "history";
+import Home from "./pages/Home";
+import { store } from "./redux/store.js";
+
+//history giúp chuyển hướng trang
+export const history = createBrowserHistory();
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <Provider store={store}>
+    <HistoryRouter history={history}>
+      <Routes>
+        <Route path="" element={<HomeTemplate />}>
+          <Route index element={<Home />}></Route>
+          <Route path="*" element={<Navigate to="" />}></Route>
+        </Route>
+      </Routes>
+    </HistoryRouter>
+  </Provider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
