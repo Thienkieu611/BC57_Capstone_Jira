@@ -16,6 +16,10 @@ import { createBrowserHistory } from "history";
 import Home from "./pages/Home";
 import { store } from "./redux/store.js";
 import CreateProject from "./pages/CreateProject/CreateProject.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Profile from "./pages/Profile.jsx";
+import LoginTemplate from "./templates/LoginTemplate.jsx";
 import UpdateProject from "./pages/UpdateProject.jsx";
 
 //history giúp chuyển hướng trang
@@ -26,11 +30,16 @@ root.render(
   <Provider store={store}>
     <HistoryRouter history={history}>
       <Routes>
-        <Route path="/" element={<HomeTemplate />}>
+        <Route path="projects" element={<HomeTemplate />}>
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
           <Route path="updateProject" element={<UpdateProject />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
+          <Route path="my-profile" element={<Profile />}></Route>
+        </Route>
+        <Route path="/" element={<LoginTemplate />}>
+          <Route path="login" element={<Login />}></Route>
+          <Route path="register" element={<Register />}></Route>
         </Route>
       </Routes>
     </HistoryRouter>
