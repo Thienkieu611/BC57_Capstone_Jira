@@ -16,6 +16,7 @@ import { createBrowserHistory } from "history";
 import Home from "./pages/Home";
 import { store } from "./redux/store.js";
 import CreateProject from "./pages/CreateProject/CreateProject.jsx";
+import UpdateProject from "./pages/UpdateProject.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
@@ -28,6 +29,7 @@ root.render(
         <Route path="/" element={<HomeTemplate />}>
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
+          <Route path="updateProject" element={<UpdateProject />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
         </Route>
       </Routes>
