@@ -21,6 +21,7 @@ import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import LoginTemplate from "./templates/LoginTemplate.jsx";
 import UpdateProject from "./pages/UpdateProject.jsx";
+import CreateTask from "./pages/CreateTask.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
