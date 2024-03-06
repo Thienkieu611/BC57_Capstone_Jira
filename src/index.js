@@ -36,6 +36,7 @@ root.render(
           <Route path="my-profile" element={<Profile />}></Route>
         </Route>
         <Route path="/" element={<LoginTemplate />}>
+          <Route index element={<Login />}></Route>
           <Route path="login" element={<Login />}></Route>
           <Route path="register" element={<Register />}></Route>
         </Route>

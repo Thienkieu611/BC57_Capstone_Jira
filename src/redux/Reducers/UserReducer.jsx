@@ -24,14 +24,18 @@ const UserReducer = createSlice({
       state.userLogin = action.payload;
       state.isLogin = true;
     },
+    registerAction: (state, action) => {
+      state.userRegister = action.payload;
+    },
     logOutAction: (state, action) => {
       state.userLogin = { email: "", accessToken: "" };
       state.isLogin = false;
     },
+    
   }
 });
 
-export const {loginAction, logOutAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -64,5 +68,32 @@ export const logoutApiAction = (userLogin) => {
     localStorage.removeItem(USER_LOGIN);
     const action = logOutAction();
     dispatch(action);
+  };
+};
+
+export const registerApiAction = (userRegister) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios({
+        url: "https://jiranew.cybersoft.edu.vn/api/Users/signup",
+        method: "POST",
+        data: {
+          email: userRegister.email,
+          passWord: userRegister.passWord,
+          name: userRegister.name,
+          phoneNumber: userRegister.phoneNumber,
+        },
+      });
+      const action = registerAction(res.data.content);
+      dispatch(action);
+
+      alert(res.data.message);
+      window.location.href = "/login";
+    } catch (error) {
+      if (error.response?.status === 400) {
+        alert("Email already exist!");
+        window.location.href = "/register";
+      }
+    }
   };
 };
