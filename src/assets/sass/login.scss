@@ -1,15 +1,26 @@
-.password-eye {
-    position: relative;
+@import './index.scss';
 
-    #password {}
+.login-template {
+  .outlet {
+    .login-page {
+      .login-form {
+        .login-facebook {
+          .facebook-login {
+            span {
+              .facebook-button {
+                
+              }
+            }
+          }
+        }
 
-    .eye-icon {
-        position: absolute;
-        top: 75%;
-        right: 10px;
-        transform: translateY(-50%);
-        cursor: pointer;
+        .register-account {
+          .register-link {
+            text-decoration: none;
+            color: black;
+          }
+        }
+      }
     }
+  }
 }
-
-

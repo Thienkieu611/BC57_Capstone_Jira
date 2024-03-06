@@ -1,10 +1,10 @@
-.password-eye {
-  position: relative;
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
-.password-eye .eye-icon {
-  position: absolute;
-  top: 75%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
+
+.login-template .outlet .login-page .login-form .register-account .register-link {
+  text-decoration: none;
+  color: black;
 }/*# sourceMappingURL=login.css.map */

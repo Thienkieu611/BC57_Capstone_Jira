@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import FacebookLogin from "./FacebookLogin";
 import { useDispatch } from "react-redux";
 import * as yup from "yup";
 import { loginApiAction } from "../redux/Reducers/UserReducer";
@@ -11,7 +10,8 @@ import {
   EyeTwoTone,
   LockOutlined,
 } from "@ant-design/icons";
-import { Input } from "antd";
+import { Input, Button } from "antd";
+import LoginUsingFacebook from "./LoginUsingFacebook";
 
 const Login = () => {
   //set show pass login
@@ -35,11 +35,6 @@ const Login = () => {
       password: yup
         .string()
         .required("Password cannot be blank")
-        .min(8, "Password must have minimum 8 characters"),
-      // .matches(
-      //   /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-])(?=.*[0-9]).{8,}$/,
-      //   "The password should contain at least one uppercase letter, one lowercase letter, and one number"
-      // ),
     }),
     onSubmit: async (userLogin) => {
       const action = loginApiAction(userLogin);
@@ -49,9 +44,9 @@ const Login = () => {
   });
   useEffect(() => {}, []);
   return (
-    <div className="container px-5">
+    <div className="container px-5 login-page">
       <h3 className="text-center mt-5">Login to start with JiraClone</h3>
-      <form className="mt-5" onSubmit={loginForm.handleSubmit}>
+      <form className="mt-5 login-form" onSubmit={loginForm.handleSubmit}>
         <div className="form-group">
           {/* <input
             className="form-control"
@@ -111,17 +106,20 @@ const Login = () => {
             Login
           </button>
         </div>
-        <div className="form-group login-facebook text-center ">
+        {/* <div className="form-group login-facebook text-center ">
           <NavLink>
             Or you can continue with
             <span className="facebook-link">
-              <FacebookLogin />
+              <LoginUsingFacebook/>
             </span>
           </NavLink>
+        </div> */}
+        <div className="form-group login-facebook text-center ">
+            Or you can continue with <LoginUsingFacebook/>
         </div>
         <div className="form-group text-center register-account">
           <span>Don't have an account yet? </span>
-          <NavLink to={"/register"}>Register here</NavLink>
+          <NavLink className={"register-link"} to={"/register"}>Register here</NavLink>
         </div>
       </form>
     </div>

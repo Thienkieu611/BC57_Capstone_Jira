@@ -22,6 +22,8 @@ import Profile from "./pages/Profile.jsx";
 import LoginTemplate from "./templates/LoginTemplate.jsx";
 import UpdateProject from "./pages/UpdateProject.jsx";
 import CreateTask from "./pages/CreateTask.jsx";
+import "./assets/sass/index.scss";
+import UpdateProfile from "./pages/UpdateProfile.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
@@ -37,6 +39,7 @@ root.render(
           <Route path="updateProject" element={<UpdateProject />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
+          <Route path="update-profile" element={<UpdateProfile />}></Route>
         </Route>
         <Route path="/" element={<LoginTemplate />}>
           <Route index element={<Login />}></Route>

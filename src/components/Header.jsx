@@ -110,9 +110,16 @@ const Header = () => {
             aria-haspopup="true"
             aria-expanded="false"
           >
-            Users
+            <img src={userLogin.avatar} alt="" className="mx-2" style={{borderRadius: "50%", width: "2.5rem"}}/>
+            {userLogin.email}
           </a>
           <div className="dropdown-menu" aria-labelledby="dropdownId">
+          <NavLink
+              className="btn btn-light dropdown-item"
+              to={"my-profile"}
+            >
+              My Profile
+            </NavLink>
             <NavLink
               className="btn btn-light dropdown-item"
               to={"/login"}

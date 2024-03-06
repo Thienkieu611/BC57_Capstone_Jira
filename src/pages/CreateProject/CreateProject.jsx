@@ -196,7 +196,7 @@ const CreateProject = () => {
         <p>
           <NavLink
             className="text-decoration-none text-secondary me-2 "
-            to={"/"}
+            to={"/projects"}
           >
             Projects
           </NavLink>

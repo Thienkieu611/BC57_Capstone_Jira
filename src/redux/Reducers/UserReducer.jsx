@@ -24,6 +24,9 @@ const UserReducer = createSlice({
       state.userLogin = action.payload;
       state.isLogin = true;
     },
+    loginFacebookAction: (state, action) => {
+      state.isLogin = true;
+    },
     registerAction: (state, action) => {
       state.userRegister = action.payload;
     },
@@ -31,11 +34,11 @@ const UserReducer = createSlice({
       state.userLogin = { email: "", accessToken: "" };
       state.isLogin = false;
     },
-    
+
   }
 });
 
-export const {loginAction, registerAction, logOutAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -61,6 +64,31 @@ export const loginApiAction = (userLogin) => {
     }
   };
 };
+
+export const loginFacebookApiAction = (response) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios({
+        url: "https://jiranew.cybersoft.edu.vn/api/Users/facebooklogin",
+        method: "POST",
+        data: {
+          facebookToken: response.accessToken,
+        },
+      });
+      console.log("res", res);
+      localStorage.setItem(TOKEN, res.data.content.accessToken);
+      localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
+      const action = loginFacebookAction(res.data.content);
+      dispatch(action);
+      window.location.href = "/";
+    } catch (error) {
+      if (error.response?.status === 404) {
+        alert("Login failed");
+        window.location.href = "/login";
+      }
+    }
+  };
+}
 
 export const logoutApiAction = (userLogin) => {
   return async (dispatch) => {
