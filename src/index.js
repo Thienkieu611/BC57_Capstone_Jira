@@ -20,6 +20,8 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import LoginTemplate from "./templates/LoginTemplate.jsx";
+import UpdateProject from "./pages/UpdateProject.jsx";
+import CreateTask from "./pages/CreateTask.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
@@ -32,6 +34,7 @@ root.render(
         <Route path="projects" element={<HomeTemplate />}>
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
+          <Route path="updateProject" element={<UpdateProject />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
         </Route>
