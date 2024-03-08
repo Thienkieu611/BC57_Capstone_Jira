@@ -22,9 +22,14 @@ import Profile from "./pages/Profile.jsx";
 import LoginTemplate from "./templates/LoginTemplate.jsx";
 import UpdateProject from "./pages/UpdateProject.jsx";
 import CreateTask from "./pages/CreateTask.jsx";
+import "./assets/sass/index.scss";
+import UpdateProfile from "./pages/UpdateProfile.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
+
+// Check if userLogin exists in localStorage
+const userLogin = localStorage.getItem("userLogin");
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -35,10 +40,13 @@ root.render(
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
           <Route path="updateProject" element={<UpdateProject />}></Route>
+          <Route path="createTask" element={<CreateTask />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
+          <Route path="update-profile" element={<UpdateProfile />}></Route>
         </Route>
         <Route path="/" element={<LoginTemplate />}>
+          <Route index element={<Login />}></Route>
           <Route path="login" element={<Login />}></Route>
           <Route path="register" element={<Register />}></Route>
         </Route>

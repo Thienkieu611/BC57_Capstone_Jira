@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { createProject } from "../../utils/createProject";
-import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toAliasString } from "./Alias";
 import { Button, Modal, Input } from "antd";
@@ -112,7 +112,6 @@ const CreateProject = () => {
     filterUsers(searchTermWithoutAccents);
   };
 
-  // chức năng thêm xóa thành viên vào project
   const filterUsers = (searchTerm) => {
     if (searchTerm) {
       const filteredUsers = arrUser.filter((arrUser) =>
@@ -126,6 +125,7 @@ const CreateProject = () => {
     }
   };
 
+  // chức năng thêm xóa thành viên vào project
   const arrUserProjectRef = useRef([]);
 
   const addUserProject = (projectID, userID) => {
@@ -196,7 +196,7 @@ const CreateProject = () => {
         <p>
           <NavLink
             className="text-decoration-none text-secondary me-2 "
-            to={"/"}
+            to={"/projects"}
           >
             Projects
           </NavLink>
