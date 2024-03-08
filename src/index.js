@@ -35,6 +35,7 @@ root.render(
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
           <Route path="updateProject" element={<UpdateProject />}></Route>
+          <Route path="createTask" element={<CreateTask />}></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
         </Route>
