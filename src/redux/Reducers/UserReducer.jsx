@@ -24,14 +24,25 @@ const UserReducer = createSlice({
       state.userLogin = action.payload;
       state.isLogin = true;
     },
+    loginFacebookAction: (state, action) => {
+      state.isLogin = true;
+    },
+    registerAction: (state, action) => {
+      state.userRegister = action.payload;
+    },
     logOutAction: (state, action) => {
       state.userLogin = { email: "", accessToken: "" };
       state.isLogin = false;
     },
+    updateProfileAction: (state, action) => {
+      //console.log('Action payload:', action.payload);
+      state.userProfile = action.payload;
+    }
+
   }
 });
 
-export const {loginAction, logOutAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -58,11 +69,82 @@ export const loginApiAction = (userLogin) => {
   };
 };
 
+export const loginFacebookApiAction = (response) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios({
+        url: "https://jiranew.cybersoft.edu.vn/api/Users/facebooklogin",
+        method: "POST",
+        data: {
+          facebookToken: response.accessToken,
+        },
+      });
+      console.log("res", res);
+      localStorage.setItem(TOKEN, res.data.content.accessToken);
+      localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
+      const action = loginFacebookAction(res.data.content);
+      dispatch(action);
+      window.location.href = "/";
+    } catch (error) {
+      if (error.response?.status === 404) {
+        alert("Login failed");
+        window.location.href = "/login";
+      }
+    }
+  };
+}
+
 export const logoutApiAction = (userLogin) => {
   return async (dispatch) => {
     localStorage.removeItem(TOKEN);
     localStorage.removeItem(USER_LOGIN);
     const action = logOutAction();
     dispatch(action);
+  };
+};
+
+export const registerApiAction = (userRegister) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios({
+        url: "https://jiranew.cybersoft.edu.vn/api/Users/signup",
+        method: "POST",
+        data: {
+          email: userRegister.email,
+          passWord: userRegister.passWord,
+          name: userRegister.name,
+          phoneNumber: userRegister.phoneNumber,
+        },
+      });
+      const action = registerAction(res.data.content);
+      dispatch(action);
+
+      alert(res.data.message);
+      window.location.href = "/login";
+    } catch (error) {
+      if (error.response?.status === 400) {
+        alert("Email already exist!");
+        window.location.href = "/register";
+      }
+    }
+  };
+};
+
+export const updateProfileApiAction = (updatedProfile) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.put('/api/Users/editUser', {
+        id: updatedProfile.id,
+        passWord: updatedProfile.passWord,
+        email: updatedProfile.email,
+          name: updatedProfile.name,
+          phoneNumber: updatedProfile.phoneNumber,
+      });
+      dispatch(updateProfileAction(res.data.content));
+      alert("Account is updated successfully!");
+      window.location.href = "/projects/my-profile";
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+    }
   };
 };
