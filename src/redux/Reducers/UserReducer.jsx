@@ -14,6 +14,7 @@ if (localStorage.getItem(USER_LOGIN)) {
 const initialState = {
  userLogin: userLoginDefault,
  isLogin: false,
+ userArr: [],
 }
 
 const UserReducer = createSlice({
@@ -37,12 +38,15 @@ const UserReducer = createSlice({
     updateProfileAction: (state, action) => {
       //console.log('Action payload:', action.payload);
       state.userProfile = action.payload;
+    },
+    setUserArrayAction: (state, action) => {
+      state.userArr = action.payload
     }
 
   }
 });
 
-export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction, setUserArrayAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -148,3 +152,11 @@ export const updateProfileApiAction = (updatedProfile) => {
     }
   };
 };
+
+export const getAllUsersApiAction = () => {
+  return async (dispatch) => {
+    const res = await https.get('/api/Users/getUser')
+    const action = setUserArrayAction(res.data.content)
+    dispatch(action)
+  }
+}

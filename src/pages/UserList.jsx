@@ -1,0 +1,211 @@
+import React, { useEffect, useRef, useState } from "react";
+import { Table, Button, Input, Space } from "antd";
+import { SearchOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import Highlighter from 'react-highlight-words';
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUsersApiAction } from "../redux/Reducers/UserReducer";
+import { NavLink } from "react-router-dom";
+
+
+const UserList = () => {
+    const {userArr} = useSelector(state => state.userReducer)
+    console.log(userArr)
+    const dispatch = useDispatch()
+
+    const getAllUser = async() => {
+        const action = getAllUsersApiAction()
+        dispatch(action)
+    }
+
+    useEffect(() => {
+        getAllUser()
+    }, [])
+
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+
+  const clearAll = () => {
+    setSortedInfo({});
+    setSearchText("")
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+
+  const columns = [
+    {
+      title: "No.",
+      dataIndex: 'no',
+      name: 'no',
+      render: function(text, record, index) {
+        return <p>{index + 1}</p>
+      }
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      name: "name",
+      ...getColumnSearchProps('name'),
+      sorter: (a, b) => a.name.length - b.name.length,
+    },
+    {
+      title: "User ID",
+      dataIndex: "userId",
+      name: "userId",
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.id - b.id,
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      name: "email",
+    },
+    {
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
+      name: "phoneNumber",
+    },
+    {
+      title: "Action",
+      dataIndex: 'action',
+    name: 'action',
+    render: (text, record, index) => {
+        return <div>
+          <a><EditOutlined style={{color: "#3671fc", fontSize: "1.2rem"}}/></a>
+          <a className="mx-4"><DeleteOutlined style={{color: "#ff0000", fontSize: "1.2rem"}}/></a>
+        </div>
+      }
+    },
+  ];
+
+  const onChange = (pagination, filters, sorter, extra) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+  return (
+    <div className="container mt-5">
+      <h3>User List</h3>
+      <Button onClick={clearAll}>Clear filters and sorters</Button>
+      <Table
+        className="mt-4"
+        columns={columns}
+        dataSource={userArr}
+        onChange={onChange}
+      />
+    </div>
+  );
+};
+
+export default UserList;
