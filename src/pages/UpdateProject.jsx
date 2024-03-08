@@ -217,7 +217,7 @@ const UpdateProject = () => {
 
           <NavLink
             className="text-decoration-none btn bg-secondary text-white fs-6 my-3 me-2 "
-            to={"/"}
+            to={"/projects"}
           >
             Cancel
           </NavLink>
