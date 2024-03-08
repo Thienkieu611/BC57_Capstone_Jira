@@ -73,9 +73,9 @@ const Header = () => {
               </div>
             </li>
             <li className="nav-item">
-              <a className="nav-link active" href="#" aria-current="page">
+              <NavLink to={"/projects/createTask"} className="nav-link active">
                 Create Task <span className="visually-hidden">(current)</span>
-              </a>
+              </NavLink>
             </li>
           </ul>
         </div>
