@@ -34,11 +34,15 @@ const UserReducer = createSlice({
       state.userLogin = { email: "", accessToken: "" };
       state.isLogin = false;
     },
+    updateProfileAction: (state, action) => {
+      //console.log('Action payload:', action.payload);
+      state.userProfile = action.payload;
+    }
 
   }
 });
 
-export const {loginAction, registerAction, logOutAction, loginFacebookAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -122,6 +126,25 @@ export const registerApiAction = (userRegister) => {
         alert("Email already exist!");
         window.location.href = "/register";
       }
+    }
+  };
+};
+
+export const updateProfileApiAction = (updatedProfile) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.put('/api/Users/editUser', {
+        id: updatedProfile.id,
+        passWord: updatedProfile.passWord,
+        email: updatedProfile.email,
+          name: updatedProfile.name,
+          phoneNumber: updatedProfile.phoneNumber,
+      });
+      dispatch(updateProfileAction(res.data.content));
+      alert("Account is updated successfully!");
+      window.location.href = "/projects/my-profile";
+    } catch (error) {
+      console.error("Error updating user profile:", error);
     }
   };
 };

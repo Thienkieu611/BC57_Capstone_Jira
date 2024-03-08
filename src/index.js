@@ -28,6 +28,9 @@ import UpdateProfile from "./pages/UpdateProfile.jsx";
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
 
+// Check if userLogin exists in localStorage
+const userLogin = localStorage.getItem("userLogin");
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
