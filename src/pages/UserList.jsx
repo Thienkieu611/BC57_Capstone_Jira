@@ -1,30 +1,54 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Table, Button, Input, Space } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import Highlighter from 'react-highlight-words';
+import { Table, Button, Input, Space, Modal, Tooltip, Popconfirm, Flex } from "antd";
+import {
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
+import Highlighter from "react-highlight-words";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllUsersApiAction } from "../redux/Reducers/UserReducer";
-import { NavLink } from "react-router-dom";
-
+import {
+  deleteUserApiAction,
+  getAllUsersApiAction,
+} from "../redux/Reducers/UserReducer";
+import EditUserModal from "../components/EditUserModal";
 
 const UserList = () => {
-    const {userArr} = useSelector(state => state.userReducer)
-    console.log(userArr)
-    const dispatch = useDispatch()
+  const { userArr } = useSelector((state) => state.userReducer);
+  console.log(userArr);
+  const dispatch = useDispatch();
 
-    const getAllUser = async() => {
-        const action = getAllUsersApiAction()
-        dispatch(action)
-    }
+  const getAllUser = async () => {
+    const action = getAllUsersApiAction();
+    dispatch(action);
+  };
 
-    useEffect(() => {
-        getAllUser()
-    }, [])
+  useEffect(() => {
+    getAllUser();
+  }, []);
 
+  //searching and sorting on the table
   const [sortedInfo, setSortedInfo] = useState({});
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+
+
+  //delete confirm
+  const confirm = (userId) => {
+    console.log("success", userId);
+    // Dispatch the action with the userId
+    dispatch(deleteUserApiAction(userId));
+  };
+  const cancel = (e) => {
+    console.log(e);
+    // message.error("Click on No");
+  };
+
+  const handleChange = (pagination, filters, sorter) => {
+    setSortedInfo(sorter);
+  };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -39,7 +63,8 @@ const UserList = () => {
 
   const clearAll = () => {
     setSortedInfo({});
-    setSearchText("")
+    setSearchText("");
+    console.log("clear all");
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -94,19 +119,6 @@ const UserList = () => {
             type="link"
             size="small"
             onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
               close();
             }}
           >
@@ -148,25 +160,28 @@ const UserList = () => {
   const columns = [
     {
       title: "No.",
-      dataIndex: 'no',
-      name: 'no',
-      render: function(text, record, index) {
-        return <p>{index + 1}</p>
-      }
+      dataIndex: "no",
+      name: "no",
+      render: (text, record, index) => <p>{index + 1}</p>,
     },
     {
       title: "Name",
       dataIndex: "name",
+      key: "name",
       name: "name",
-      ...getColumnSearchProps('name'),
-      sorter: (a, b) => a.name.length - b.name.length,
+      ...getColumnSearchProps("name"),
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
+      ellipsis: true,
     },
     {
       title: "User ID",
       dataIndex: "userId",
+      key: "userId",
       name: "userId",
-      defaultSortOrder: 'descend',
-      sorter: (a, b) => a.id - b.id,
+      sorter: (a, b) => a.userId - b.userId,
+      sortOrder: sortedInfo.columnKey === "userId" ? sortedInfo.order : null,
+      ellipsis: true,
     },
     {
       title: "Email",
@@ -180,20 +195,32 @@ const UserList = () => {
     },
     {
       title: "Action",
-      dataIndex: 'action',
-    name: 'action',
-    render: (text, record, index) => {
-        return <div>
-          <a><EditOutlined style={{color: "#3671fc", fontSize: "1.2rem"}}/></a>
-          <a className="mx-4"><DeleteOutlined style={{color: "#ff0000", fontSize: "1.2rem"}}/></a>
-        </div>
-      }
+      dataIndex: "action",
+      name: "action",
+      render: (text, record, index) => {
+        return (
+          <div>
+            <EditUserModal record={record}/>
+            <Popconfirm
+              title="Delete the user"
+              description="Are you sure to delete this user?"
+              onConfirm={() => confirm(record.userId)}
+              onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+            >
+              <a className="mx-3">
+                <DeleteOutlined
+                  style={{ color: "#ff0000", fontSize: "1.2rem" }}
+                />
+              </a>
+            </Popconfirm>
+          </div>
+        );
+      },
     },
   ];
 
-  const onChange = (pagination, filters, sorter, extra) => {
-    console.log("params", pagination, filters, sorter, extra);
-  };
   return (
     <div className="container mt-5">
       <h3>User List</h3>
@@ -202,7 +229,7 @@ const UserList = () => {
         className="mt-4"
         columns={columns}
         dataSource={userArr}
-        onChange={onChange}
+        onChange={handleChange}
       />
     </div>
   );
