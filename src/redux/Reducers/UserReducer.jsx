@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
-import axios from 'axios';
-import { TOKEN, USER_LOGIN, https } from '../../utils/config';
+import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { TOKEN, USER_LOGIN, https } from "../../utils/config";
 
 let userLoginDefault = {
   email: "",
@@ -12,9 +12,9 @@ if (localStorage.getItem(USER_LOGIN)) {
 }
 
 const initialState = {
- userLogin: userLoginDefault,
- isLogin: false,
-}
+  userLogin: userLoginDefault,
+  isLogin: false,
+};
 
 const UserReducer = createSlice({
   name: "UserReducer",
@@ -37,15 +37,19 @@ const UserReducer = createSlice({
     updateProfileAction: (state, action) => {
       //console.log('Action payload:', action.payload);
       state.userProfile = action.payload;
-    }
-
-  }
+    },
+  },
 });
 
-export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction} = UserReducer.actions
+export const {
+  loginAction,
+  registerAction,
+  logOutAction,
+  loginFacebookAction,
+  updateProfileAction,
+} = UserReducer.actions;
 
-export default UserReducer.reducer
-
+export default UserReducer.reducer;
 
 //------------------------------ACTION THUNK---------------------------------------------------
 
@@ -53,7 +57,7 @@ export const loginApiAction = (userLogin) => {
   return async (dispatch) => {
     try {
       //call api login
-     const res = await https.post('/api/Users/signin', userLogin)
+      const res = await https.post("/api/Users/signin", userLogin);
       localStorage.setItem(TOKEN, res.data.content.accessToken);
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
       //gửi dữ liệu sau khi thành công vào reducer
@@ -92,7 +96,7 @@ export const loginFacebookApiAction = (response) => {
       }
     }
   };
-}
+};
 
 export const logoutApiAction = (userLogin) => {
   return async (dispatch) => {
@@ -133,12 +137,12 @@ export const registerApiAction = (userRegister) => {
 export const updateProfileApiAction = (updatedProfile) => {
   return async (dispatch) => {
     try {
-      const res = await https.put('/api/Users/editUser', {
+      const res = await https.put("/api/Users/editUser", {
         id: updatedProfile.id,
         passWord: updatedProfile.passWord,
         email: updatedProfile.email,
-          name: updatedProfile.name,
-          phoneNumber: updatedProfile.phoneNumber,
+        name: updatedProfile.name,
+        phoneNumber: updatedProfile.phoneNumber,
       });
       dispatch(updateProfileAction(res.data.content));
       alert("Account is updated successfully!");
