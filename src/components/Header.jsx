@@ -67,6 +67,7 @@ const Header = () => {
                 Users
               </a>
               <div className="dropdown-menu" aria-labelledby="dropdownId">
+                <NavLink className="dropdown-item" to={"users-list"}>View User List</NavLink>
                 <NavLink className="dropdown-item" to="user-management">
                   View all users
                 </NavLink>
@@ -93,9 +94,9 @@ const Header = () => {
             <i class="fa fa-cog"></i>
           </a>
           <div className="dropdown-menu" aria-labelledby="dropdownId3">
-            <a className="dropdown-item" href="#">
+            <NavLink className="dropdown-item" to="users-list">
               User management
-            </a>
+            </NavLink>
             <a className="dropdown-item" href="#">
               Projects
             </a>

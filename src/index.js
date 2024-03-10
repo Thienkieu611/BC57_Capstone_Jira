@@ -24,6 +24,7 @@ import UpdateProject from "./pages/UpdateProject.jsx";
 import CreateTask from "./pages/CreateTask.jsx";
 import "./assets/sass/index.scss";
 import UpdateProfile from "./pages/UpdateProfile.jsx";
+import UserList from "./pages/UserList.jsx";
 import UserManagement from "./pages/UserManagement.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
 
@@ -51,6 +52,7 @@ root.render(
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
           <Route path="update-profile" element={<UpdateProfile />}></Route>
+          <Route path="users-list" element={<UserList />}></Route>
         </Route>
         <Route path="/" element={<LoginTemplate />}>
           <Route index element={<Login />}></Route>
