@@ -20,6 +20,19 @@ const EditUserModal = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const dispatch = useDispatch();
 
+     // Use useEffect to update form values when props.record changes
+     useEffect(() => {
+        editUserForm.setValues((prevValues) => ({
+          ...prevValues,
+          userId: userDetail.userId,
+          email: userDetail.email || "",
+          passWord: "",
+          name: userDetail.name || "",
+          phoneNumber: userDetail.phoneNumber || "",
+          confirmPassword: "",
+        }));
+      }, [userDetail.userId, userDetail.email, userDetail.name, userDetail.phoneNumber]);
+
     const editUserForm = useFormik({
         initialValues: {
             userId: userDetail.userId,
@@ -69,6 +82,8 @@ const EditUserModal = (props) => {
           onSubmit: (values) => {
             const action = editUserApiAction(values);
             dispatch(action)
+            setModalOpen(false)
+            
         },
     })
   return (
@@ -79,12 +94,15 @@ const EditUserModal = (props) => {
         <Modal
               title="Edit user"
               centered
-              open={modalOpen}
-              onOk={() => setModalOpen(true)}
+              visible={modalOpen}
+              onOk={editUserForm.handleSubmit}
               okText="Update"
               onCancel={() => setModalOpen(false)}
               mask={true}
               maskClosable={true}
+              okButtonProps={{
+                htmlType: "submit",
+              }}
             >
               <form onSubmit={editUserForm.handleSubmit}>
             <div className="row">
@@ -183,14 +201,6 @@ const EditUserModal = (props) => {
               </div>
             </div>
             </div>
-            <Flex gap="small" wrap="wrap">
-              <Button htmlType="submit" size="large" type="primary">
-                Update
-              </Button>
-              <Button size="large">
-                  Cancel
-              </Button>
-            </Flex>
           </form>
             </Modal>
     </>

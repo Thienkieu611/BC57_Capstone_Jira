@@ -26,7 +26,7 @@ const UserList = () => {
 
   useEffect(() => {
     getAllUser();
-  }, []);
+  }, [userArr]);
 
   //searching and sorting on the table
   const [sortedInfo, setSortedInfo] = useState({});
