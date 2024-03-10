@@ -7,7 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSelector, useDispatch } from "react-redux";
 import { getProjectCategory } from "./../redux/Reducers/CreateProjectReducer";
-import { Button, message } from "antd";
+import { message } from "antd";
 
 const UpdateProject = () => {
   const editorRef = useRef(null);
