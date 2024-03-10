@@ -25,6 +25,8 @@ import CreateTask from "./pages/CreateTask.jsx";
 import "./assets/sass/index.scss";
 import UpdateProfile from "./pages/UpdateProfile.jsx";
 import UserList from "./pages/UserList.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
+import ProjectDetail from "./pages/ProjectDetail.jsx";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
@@ -41,6 +43,12 @@ root.render(
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
           <Route path="updateProject" element={<UpdateProject />}></Route>
+          <Route path="createTask" element={<CreateTask />}></Route>
+          <Route path="user-management" element={<UserManagement />}></Route>
+          <Route
+            path="projectDetail/:projectId"
+            element={<ProjectDetail />}
+          ></Route>
           <Route path="*" element={<Navigate to="" />}></Route>
           <Route path="my-profile" element={<Profile />}></Route>
           <Route path="update-profile" element={<UpdateProfile />}></Route>

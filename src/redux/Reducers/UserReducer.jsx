@@ -62,7 +62,7 @@ export const loginApiAction = (userLogin) => {
   return async (dispatch) => {
     try {
       //call api login
-     const res = await https.post('/api/Users/signin', userLogin)
+      const res = await https.post("/api/Users/signin", userLogin);
       localStorage.setItem(TOKEN, res.data.content.accessToken);
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
       //gửi dữ liệu sau khi thành công vào reducer
@@ -102,7 +102,7 @@ export const loginFacebookApiAction = (response) => {
       }
     }
   };
-}
+};
 
 export const logoutApiAction = (userLogin) => {
   return async (dispatch) => {
@@ -143,12 +143,12 @@ export const registerApiAction = (userRegister) => {
 export const updateProfileApiAction = (updatedProfile) => {
   return async (dispatch) => {
     try {
-      const res = await https.put('/api/Users/editUser', {
+      const res = await https.put("/api/Users/editUser", {
         id: updatedProfile.id,
         passWord: updatedProfile.passWord,
         email: updatedProfile.email,
-          name: updatedProfile.name,
-          phoneNumber: updatedProfile.phoneNumber,
+        name: updatedProfile.name,
+        phoneNumber: updatedProfile.phoneNumber,
       });
       dispatch(updateProfileAction(res.data.content));
       message.success("Account is updated successfully!");
