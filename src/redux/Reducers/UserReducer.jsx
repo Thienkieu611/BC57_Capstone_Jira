@@ -94,7 +94,7 @@ export const loginFacebookApiAction = (response) => {
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
       const action = loginFacebookAction(res.data.content);
       dispatch(action);
-      window.location.href = "/";
+      window.location.href = "/projects";
     } catch (error) {
       if (error.response?.status === 404) {
         message.error('Login failed.')
