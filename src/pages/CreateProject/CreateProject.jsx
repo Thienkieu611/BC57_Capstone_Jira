@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toAliasString } from "./Alias";
-import { Button, Modal, Input } from "antd";
+import { Modal, Input } from "antd";
 import "./../../assets/sass/createProject.scss";
 import removeVietnameseTones from "./removeVietnamese";
 import { getArrUser } from "./../../redux/Reducers/CreateProjectReducer";
@@ -20,14 +20,11 @@ const CreateProject = () => {
   const dispatch = useDispatch();
   const { Search } = Input;
   const [proId, setProId] = useState([]);
-  const navigate = useNavigate();
 
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -78,7 +75,7 @@ const CreateProject = () => {
     createProject
       .getCategory()
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         setProjectCategory(res.data.content);
       })
       .catch((err) => console.log(err));
@@ -94,7 +91,7 @@ const CreateProject = () => {
     createProject
       .getUser()
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         dispatch(getArrUser(res.data.content));
         usersRef.current = res.data.content;
         setUser(res.data.content);
@@ -137,7 +134,7 @@ const CreateProject = () => {
     createProject
       .postAddUserProject(data)
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         const index = user.findIndex((item) => item.userId === userID);
         const newUser = [...user];
         const removedUser = newUser.splice(index, 1);
@@ -160,7 +157,7 @@ const CreateProject = () => {
     createProject
       .postRemoveUserProject(data)
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         const index2 = arrUserProject.findIndex(
           (item) => item.userId === userID
         );
@@ -181,7 +178,7 @@ const CreateProject = () => {
       createProject
         .getUserByProjectId(projectId)
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           setArrUserProject(res.data.content);
         })
         .catch((err) => {
@@ -249,7 +246,7 @@ const CreateProject = () => {
               id="description"
               class="form-control"
               apiKey="9o0gtndzvm3cr870417b05dbgszexdivpnbmdnwwf0ydi4z2"
-              onInit={(evt, editor) => (editorRef.current = editor)}
+              onInit={(editor) => (editorRef.current = editor)}
               initialValue={formik.values.description}
               init={{
                 height: 250,
@@ -398,16 +395,6 @@ const CreateProject = () => {
             >
               Go to projects
             </NavLink>
-            {/* <NavLink
-              onClick={() => {
-                handleCancel();
-                resetForm();
-              }}
-              to={"/projects/createProject"}
-              className="btn py-1 px-3 bg-primary me-2 text-white"
-            >
-              Create new project
-            </NavLink> */}
           </dir>
         </div>
       </Modal>

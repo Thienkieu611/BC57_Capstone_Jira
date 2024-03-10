@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { createProject } from "./../utils/createProject";
 import { updateProject } from "./../utils/updateProject";
 import { useFormik } from "formik";
@@ -20,6 +20,8 @@ const UpdateProject = () => {
     (state) => state.CreateProjectReducer
   );
   const [messageApi, contextHolder] = message.useMessage();
+  const { projectId } = useParams();
+  console.log(projectId);
 
   const info = (content) => {
     messageApi.info(content);
@@ -37,9 +39,9 @@ const UpdateProject = () => {
 
   useEffect(() => {
     updateProject
-      .getProjectDetail()
+      .getProjectDetail(projectId)
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         setProjectDetail(res.data.content);
         dispatch(getProjectCategory(res.data.content.projectCategory));
       })
@@ -70,7 +72,7 @@ const UpdateProject = () => {
       updateProject
         .putProjectDetail(id, value)
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           info("Bạn đã cập nhật Project thành công");
         })
         .catch((err) => {
@@ -176,7 +178,7 @@ const UpdateProject = () => {
               id="description"
               class="form-control"
               apiKey="9o0gtndzvm3cr870417b05dbgszexdivpnbmdnwwf0ydi4z2"
-              onInit={(evt, editor) => (editorRef.current = editor)}
+              onInit={(editor) => (editorRef.current = editor)}
               initialValue={formik.values.description}
               init={{
                 height: 250,
