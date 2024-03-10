@@ -17,13 +17,13 @@ const Header = () => {
   return (
     <div className="header bg-white text-primary container-fluid shadow px-5 fixed left-0 top-0 w-full d-flex justify-content-between">
       <nav className="navbar navbar-expand-sm text-primary p-0">
-        <a className="navbar-brand" href="#">
+        <NavLink className="navbar-brand" to="index">
           <img
             src="https://www.ecobit.nl/portal-content-website/koppelingen/jira%20software.png"
             alt="..."
             style={{ maxWidth: "500px", maxHeight: "50px" }}
           />
-        </a>
+        </NavLink>
         <button
           className="navbar-toggler d-lg-none"
           type="button"
@@ -47,12 +47,12 @@ const Header = () => {
                 Projects
               </a>
               <div className="dropdown-menu" aria-labelledby="dropdownId">
-                <a className="dropdown-item" href="#">
+                <NavLink className="dropdown-item" to="index">
                   View all projects
-                </a>
-                <a className="dropdown-item" href="#">
+                </NavLink>
+                <NavLink className="dropdown-item" to="/projects/createProject">
                   Create projects
-                </a>
+                </NavLink>
               </div>
             </li>
             <li className="nav-item dropdown">
@@ -67,9 +67,10 @@ const Header = () => {
                 Users
               </a>
               <div className="dropdown-menu" aria-labelledby="dropdownId">
-                <a className="dropdown-item" href="#">
+                <NavLink className="dropdown-item" to={"users-list"}>View User List</NavLink>
+                <NavLink className="dropdown-item" to="user-management">
                   View all users
-                </a>
+                </NavLink>
               </div>
             </li>
             <li className="nav-item">
@@ -93,9 +94,9 @@ const Header = () => {
             <i class="fa fa-cog"></i>
           </a>
           <div className="dropdown-menu" aria-labelledby="dropdownId3">
-            <a className="dropdown-item" href="#">
+            <NavLink className="dropdown-item" to="users-list">
               User management
-            </a>
+            </NavLink>
             <a className="dropdown-item" href="#">
               Projects
             </a>
@@ -110,14 +111,16 @@ const Header = () => {
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <img src={userLogin.avatar} alt="" className="mx-2" style={{borderRadius: "50%", width: "2.5rem"}}/>
+            <img
+              src={userLogin.avatar}
+              alt=""
+              className="mx-2"
+              style={{ borderRadius: "50%", width: "2.5rem" }}
+            />
             {userLogin.email}
           </a>
           <div className="dropdown-menu" aria-labelledby="dropdownId">
-          <NavLink
-              className="btn btn-light dropdown-item"
-              to={"my-profile"}
-            >
+            <NavLink className="btn btn-light dropdown-item" to={"my-profile"}>
               My Profile
             </NavLink>
             <NavLink

@@ -150,7 +150,7 @@ const UpdateProfile = () => {
               <div className="col-md-6 mb-3">
                 <label htmlFor="phone" className="form-label">
                   Password{" "}
-                  <Tooltip title="Enter you current password or if you want to change password, enter a new one.">
+                  <Tooltip title="Enter your current password or if you want to change password, enter a new one.">
                     <InfoCircleOutlined
                       style={{
                         color: "rgba(0,0,0,.45)",

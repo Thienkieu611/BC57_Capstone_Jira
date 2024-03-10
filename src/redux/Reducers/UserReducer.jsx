@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 import axios from 'axios';
 import { TOKEN, USER_LOGIN, https } from '../../utils/config';
+import {  message} from "antd";
+
 
 let userLoginDefault = {
   email: "",
@@ -14,6 +16,7 @@ if (localStorage.getItem(USER_LOGIN)) {
 const initialState = {
  userLogin: userLoginDefault,
  isLogin: false,
+ userArr: [],
 }
 
 const UserReducer = createSlice({
@@ -37,12 +40,18 @@ const UserReducer = createSlice({
     updateProfileAction: (state, action) => {
       //console.log('Action payload:', action.payload);
       state.userProfile = action.payload;
+    },
+    setUserArrayAction: (state, action) => {
+      state.userArr = action.payload
+    },
+    deleteUserAction: (state, action) => {
+      state.userArr = state.userArr.filter((value) => value.id !== action.payload)
     }
 
   }
 });
 
-export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction, setUserArrayAction, deleteUserAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -53,7 +62,7 @@ export const loginApiAction = (userLogin) => {
   return async (dispatch) => {
     try {
       //call api login
-     const res = await https.post('/api/Users/signin', userLogin)
+      const res = await https.post("/api/Users/signin", userLogin);
       localStorage.setItem(TOKEN, res.data.content.accessToken);
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
       //gửi dữ liệu sau khi thành công vào reducer
@@ -62,7 +71,8 @@ export const loginApiAction = (userLogin) => {
       window.location.href = "/projects";
     } catch (error) {
       if (error.response?.status === 404) {
-        alert("Email or password is incorrect!");
+        // alert("Email or password is incorrect!");
+        message.error('Email or password is incorrect!')
         window.location.href = "/login";
       }
     }
@@ -84,15 +94,15 @@ export const loginFacebookApiAction = (response) => {
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
       const action = loginFacebookAction(res.data.content);
       dispatch(action);
-      window.location.href = "/";
+      window.location.href = "/projects";
     } catch (error) {
       if (error.response?.status === 404) {
-        alert("Login failed");
+        message.error('Login failed.')
         window.location.href = "/login";
       }
     }
   };
-}
+};
 
 export const logoutApiAction = (userLogin) => {
   return async (dispatch) => {
@@ -119,7 +129,7 @@ export const registerApiAction = (userRegister) => {
       const action = registerAction(res.data.content);
       dispatch(action);
 
-      alert(res.data.message);
+      message.success('Account is registered successfully')
       window.location.href = "/login";
     } catch (error) {
       if (error.response?.status === 400) {
@@ -133,18 +143,58 @@ export const registerApiAction = (userRegister) => {
 export const updateProfileApiAction = (updatedProfile) => {
   return async (dispatch) => {
     try {
-      const res = await https.put('/api/Users/editUser', {
+      const res = await https.put("/api/Users/editUser", {
         id: updatedProfile.id,
         passWord: updatedProfile.passWord,
         email: updatedProfile.email,
-          name: updatedProfile.name,
-          phoneNumber: updatedProfile.phoneNumber,
+        name: updatedProfile.name,
+        phoneNumber: updatedProfile.phoneNumber,
       });
       dispatch(updateProfileAction(res.data.content));
-      alert("Account is updated successfully!");
+      message.success("Account is updated successfully!");
       window.location.href = "/projects/my-profile";
     } catch (error) {
       console.error("Error updating user profile:", error);
     }
   };
 };
+
+export const editUserApiAction = (updatedProfile) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.put('/api/Users/editUser', {
+        id: updatedProfile.userId,
+        passWord: updatedProfile.passWord,
+        email: updatedProfile.email,
+          name: updatedProfile.name,
+          phoneNumber: updatedProfile.phoneNumber,
+      });
+      dispatch(updateProfileAction(res.data.content));
+      message.success("User is edited successfully!");
+    } catch (error) {
+      console.error("Error editting user profile:", error);
+    }
+  };
+};
+
+export const getAllUsersApiAction = () => {
+  return async (dispatch) => {
+    const res = await https.get('/api/Users/getUser')
+    const action = setUserArrayAction(res.data.content)
+    dispatch(action)
+  }
+}
+
+export const deleteUserApiAction = (userId) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.delete(`/api/Users/deleteUser?id=${userId}`)
+      dispatch(deleteUserAction(userId))
+      message.success("User is deleted successfully.")
+
+    }
+    catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  }
+}

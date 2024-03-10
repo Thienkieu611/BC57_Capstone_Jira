@@ -1,0 +1,124 @@
+.project-detail {
+    p {
+        font-size: 15px;
+
+        span {
+            font-weight: 400;
+
+        }
+
+    }
+
+    .project-header {
+        h3 {}
+
+        .member {
+            margin-left: 10px;
+
+            p {
+                font-size: 15px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                padding-right: 10px;
+
+
+            }
+
+
+        }
+    }
+
+    .project-content {
+
+        .project-item {
+            background-color: #f3f4f6;
+            margin: 10px;
+            border-radius: 5px;
+            padding: 10px;
+            color: #1e1f26;
+
+
+            p {
+                .title-detail {
+                    font-size: 13px;
+                    font-weight: 500;
+
+                    padding: 5px;
+                    border-radius: 5px;
+                    letter-spacing: 1px;
+                }
+
+                .item1 {
+                    background-color: #e5e7eb;
+                }
+
+                .item2 {
+                    background-color: #c7d2fe;
+                }
+
+                .item3 {
+                    background-color: #bfdbfe;
+                }
+
+                .item4 {
+                    background-color: #a8f3d0;
+                }
+            }
+
+            .detail-info {
+                .task-detail {
+                    .task-detail-item {
+                        padding: 15px 10px;
+                        margin-bottom: 10px;
+                        border-radius: 10px;
+
+                        p {
+                            font-size: 14px;
+                            font-weight: 350;
+                        }
+
+                        .task-bottom {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-size: 14px;
+
+                            .task-left {
+                                .text-danger {}
+
+                                span {
+
+                                    font-weight: 300;
+                                    font-size: 14px;
+
+                                }
+                            }
+
+                            .task-right {}
+                        }
+                    }
+
+                }
+
+                button {
+                    background: #f3f4f6;
+                    color: black;
+                    font-weight: 400;
+                    font-size: 15px;
+                    border: 1px solid transparent;
+                    text-align: left;
+
+                    &:hover {
+                        background-color: #d1d5db;
+                        transition: all .5s;
+                    }
+                }
+
+
+            }
+
+
+
+        }
+    }
+}
