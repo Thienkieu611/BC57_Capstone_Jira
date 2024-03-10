@@ -1,25 +1,61 @@
-import React, { useEffect, useRef, useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
-import { Avatar, Button, Input, Space, Table, Tag, Tooltip } from "antd";
-import Highlighter from "react-highlight-words";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Avatar, Space, Table, Tag, Tooltip, Button, Modal } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProjectApiAction } from "../redux/Reducers/HomeReducer";
+import {
+  deleteProjectApiAction,
+  getAllProjectApiAction,
+} from "../redux/Reducers/HomeReducer";
+import { NavLink } from "react-router-dom";
 
+//set search
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const Home = () => {
   const { arrData } = useSelector((state) => state.homeReducer);
 
   const dispatch = useDispatch();
+
   const getAllProjectApi = async () => {
     const action = getAllProjectApiAction();
     dispatch(action);
   };
 
+  const deleteProjectApi = async (projectId) => {
+    const action = deleteProjectApiAction(projectId);
+    await dispatch(action);
+    getAllProjectApi();
+  };
+
   useEffect(() => {
     getAllProjectApi();
   }, []);
+
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const handleDelete = (project) => {
+    setSelectedProject(project);
+    Modal.confirm({
+      title: `Are you sure to delete ${project.projectName}?`,
+      icon: <ExclamationCircleFilled />,
+
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancle",
+      async onOk() {
+        await deleteProjectApi(project.id);
+      },
+      onCancel() {
+        setSelectedProject(null);
+      },
+    });
+  };
+
   const columns = [
     {
       title: "Id",
@@ -33,25 +69,30 @@ const Home = () => {
       dataIndex: "projectName",
       key: "projectName",
       width: "25%",
-      sorter: (a, b) => a.projectName.length - b.projectName.length,
-      sortDirections: ["descend", "ascend"],
-      render: (text) => (
-        <a className="text-primary text-decoration-none">{text}</a>
+      sorter: (a, b) => a.projectName.localeCompare(b.projectName),
+      sortDirections: ["ascend", "descend"],
+      render: (text, record, index) => (
+        <NavLink
+          to={`/projects/projectDetail/${record.id}`}
+          className="text-primary text-decoration-none"
+        >
+          {text}
+        </NavLink>
       ),
     },
     {
       title: "Category name",
       dataIndex: "categoryName",
       key: "categoryName",
-      sorter: (a, b) => a.categoryName.length - b.categoryName.length,
-      sortDirections: ["descend", "ascend"],
+      sorter: (a, b) => a.categoryName.localeCompare(b.categoryName),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Creator",
       dataIndex: "creatorName",
       key: "creatorName",
-      sorter: (a, b) => a.creatorName.localeCompare(b.creatorName),
-      sortDirections: ["descend", "ascend"],
+      sorter: (a, b) => a.creator.name.localeCompare(b.creator.name),
+      sortDirections: ["ascend", "descend"],
       render: (text, record, index) => (
         <Tag color="geekblue" className="py-1 px-2">
           {record.creator.name}
@@ -72,6 +113,14 @@ const Home = () => {
               <Avatar src={member.avatar} alt={member.name} />
             </Tooltip>
           ))}
+          <Avatar
+            style={{
+              backgroundColor: "#fde3cf",
+              color: "#f56a00",
+              cursor: "pointer",
+            }}
+            icon={<PlusOutlined />}
+          />
         </Avatar.Group>
       ),
     },
@@ -80,7 +129,7 @@ const Home = () => {
       key: "action",
       render: (text, record, index) => (
         <Space size={"middle"}>
-          <a
+          <NavLink
             style={{
               background: "#1890ff",
               borderRadius: "5px",
@@ -88,16 +137,17 @@ const Home = () => {
             }}
           >
             <EditOutlined style={{ color: "#fff" }} />
-          </a>
-          <a
+          </NavLink>
+          <NavLink
             style={{
               background: "#ff4d4f",
               borderRadius: "5px",
               padding: "7px",
             }}
+            onClick={() => handleDelete(record)}
           >
             <DeleteOutlined style={{ color: "#fff" }} />
-          </a>
+          </NavLink>
         </Space>
       ),
     },
@@ -115,7 +165,12 @@ const Home = () => {
             width: 250,
           }}
         />
-        <a className="create-task btn btn-primary">Create Project</a>
+        <NavLink
+          to={"/projects/createProject"}
+          className="create-task btn btn-primary"
+        >
+          Create Projectx
+        </NavLink>
       </div>
       <Table columns={columns} dataSource={arrData} />
     </div>
