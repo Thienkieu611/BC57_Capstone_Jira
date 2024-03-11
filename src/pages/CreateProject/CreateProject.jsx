@@ -10,6 +10,7 @@ import { Modal, Input } from "antd";
 import "./../../assets/sass/createProject.scss";
 import removeVietnameseTones from "./removeVietnamese";
 import { getArrUser } from "./../../redux/Reducers/CreateProjectReducer";
+import useResponsive from "./../../hook/useResponsive";
 
 const CreateProject = () => {
   const editorRef = useRef(null);
@@ -20,6 +21,7 @@ const CreateProject = () => {
   const dispatch = useDispatch();
   const { Search } = Input;
   const [proId, setProId] = useState([]);
+  const windowSize = useResponsive();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -320,10 +322,19 @@ const CreateProject = () => {
               }}
             />
           </div>
-          <div className="d-flex justify-content-between">
+          <div
+            className={` ${
+              windowSize.widthWindow < 768
+                ? "h-100"
+                : "d-flex justify-content-between"
+            }`}
+          >
             <div
-              className="w-50 me-3 "
-              style={{ overflow: "auto", height: "390px" }}
+              className={` ${windowSize.widthWindow < 768 ? "" : "w-50 me-3"}`}
+              style={{
+                overflow: "auto",
+                height: windowSize.widthWindow ? "170px" : "390px",
+              }}
             >
               <h6>Not yet added</h6>
               {user.map((item, index) => {
@@ -333,7 +344,11 @@ const CreateProject = () => {
                       <div>
                         <img
                           src={item.avatar}
-                          className="w-75 rounded-circle"
+                          className={`${
+                            windowSize.widthWindow < 315
+                              ? "w-50 rounded-circle"
+                              : "w-75 rounded-circle"
+                          }`}
                         />
                       </div>
                       <div>
@@ -353,7 +368,7 @@ const CreateProject = () => {
                 );
               })}
             </div>
-            <div className="w-50">
+            <div className={` ${windowSize.widthWindow < 768 ? "" : "w-50"}`}>
               <h6>Already in project</h6>
               {arrUserProject
                 ? arrUserProject.map((item, index) => {
@@ -363,7 +378,11 @@ const CreateProject = () => {
                           <div>
                             <img
                               src={item.avatar}
-                              className="w-75 rounded-circle"
+                              className={`${
+                                windowSize.widthWindow < 315
+                                  ? "w-50 rounded-circle"
+                                  : "w-75 rounded-circle"
+                              }`}
                             />
                           </div>
                           <div>

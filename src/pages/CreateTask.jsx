@@ -4,7 +4,8 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createTask } from "./../utils/createTask";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import useResponsive from "./../hook/useResponsive";
 
 const CreateTask = () => {
   const editorRef = useRef(null);
@@ -21,6 +22,7 @@ const CreateTask = () => {
   const [remainHours, setRemainHours] = useState(0);
   const [listUserAssigner, setListUserAssigner] = useState();
   const [messageApi, contextHolder] = message.useMessage();
+  const windowSize = useResponsive();
 
   const info = (content) => {
     messageApi.info(content);
@@ -198,7 +200,11 @@ const CreateTask = () => {
                 )}
               </div>
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Status</label>
               <select id="status" onChange={handleChange3} class="form-control">
@@ -227,7 +233,11 @@ const CreateTask = () => {
                 })}
               </select>
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Task Type</label>
               <select id="taskType" class="form-control">
@@ -274,7 +284,11 @@ const CreateTask = () => {
                 onChange={timeEst}
               />
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Hours spent</label>
               <InputNumber
