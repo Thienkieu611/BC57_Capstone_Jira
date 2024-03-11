@@ -27,12 +27,22 @@ import UpdateProfile from "./pages/UpdateProfile.jsx";
 import UserList from "./pages/UserList.jsx";
 import UserManagement from "./pages/UserManagement.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
+import { logoutApiAction } from "./redux/Reducers/UserReducer.jsx";
+import { USER_LOGIN } from "./utils/config.js";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
 
 // Check if userLogin exists in localStorage
-const userLogin = localStorage.getItem("userLogin");
+const userLogin = localStorage.getItem(USER_LOGIN);
+
+// Add the beforeunload event listener
+window.addEventListener("beforeunload", () => {
+  // Dispatch the logout action when the user closes the browser or tab
+  if (userLogin) {
+    store.dispatch(logoutApiAction(userLogin));
+  }
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
