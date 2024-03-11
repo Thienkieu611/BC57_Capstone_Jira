@@ -2,8 +2,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutApiAction } from "../redux/Reducers/UserReducer";
 import { NavLink } from "react-router-dom";
-import { DownOutlined } from "@ant-design/icons";
-import { Dropdown, Menu, Space } from "antd";
 
 const Header = () => {
   const { userLogin } = useSelector((state) => state.userReducer);

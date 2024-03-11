@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Table, Button, Input, Space, Modal, Tooltip, Popconfirm, Flex } from "antd";
+import { Table, Button, Input, Space, Popconfirm } from "antd";
 import {
   SearchOutlined,
-  EditOutlined,
   DeleteOutlined,
-  InfoCircleOutlined,
 } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useDispatch, useSelector } from "react-redux";
@@ -199,8 +197,9 @@ const UserList = () => {
       name: "action",
       render: (text, record, index) => {
         return (
-          <div>
+          <div className="d-flex flex-column flex-md-row">
             <EditUserModal record={record}/>
+            <div className="mt-3 mt-md-0 mx-0 mx-md-3">
             <Popconfirm
               title="Delete the user"
               description="Are you sure to delete this user?"
@@ -209,12 +208,13 @@ const UserList = () => {
               okText="Yes"
               cancelText="No"
             >
-              <a className="mx-3">
+              <a>
                 <DeleteOutlined
                   style={{ color: "#ff0000", fontSize: "1.2rem" }}
                 />
               </a>
             </Popconfirm>
+            </div>
           </div>
         );
       },
@@ -222,8 +222,8 @@ const UserList = () => {
   ];
 
   return (
-    <div className="container mt-5">
-      <h3>User List</h3>
+    <div className="container">
+      <h2 className="text-center pt-5 pb-4">Users Management</h2>
       <Button onClick={clearAll}>Clear filters and sorters</Button>
       <Table
         className="mt-4"

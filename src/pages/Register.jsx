@@ -9,10 +9,6 @@ import { Input } from 'antd';
 
 
 const Register = () => {
-  // const [showPassword, setShowPassword] = useState(false);
-  // const hanleShowPassword = () => {
-  //   setShowPassword(!showPassword);
-  // };
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const dispatch = useDispatch()
@@ -61,7 +57,7 @@ const Register = () => {
   })
   return (
     <div className='container px-5'>
-      <h3 className="text-center mt-5">Register with JiraClone</h3>
+      <h2 className="text-center mt-5">Register with JiraClone</h2>
       <form className='mt-5' onSubmit={registerForm.handleSubmit}>
       <div className="form-group">
           <Input size="large"
@@ -104,17 +100,6 @@ const Register = () => {
             onChange={registerForm.handleChange}
             prefix={<LockOutlined />}
           />
-          {/* <span
-                    type="button"
-                    className="eye-icon"
-                    onClick={hanleShowPassword}
-                  >
-                    {showPassword ? (
-                      <i className="fa fa-eye-slash"></i>
-                    ) : (
-                      <i className="fa fa-eye"></i>
-                    )}
-                  </span> */}
           <p className="text text-danger">
           {registerForm.errors.passWord && registerForm.errors.passWord}
           </p>

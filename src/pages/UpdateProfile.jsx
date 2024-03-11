@@ -75,7 +75,7 @@ const UpdateProfile = () => {
         </NavLink>
         <span>/ Update Profile</span>
       </p>
-      <h3>Update Profile</h3>
+      <h2 className="text-center pb-4">Update Profile</h2>
       <div className="row mt-3">
         <div className="col-md-4">
           <img
