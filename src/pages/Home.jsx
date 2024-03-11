@@ -150,6 +150,7 @@ const Home = () => {
       render: (text, record, index) => (
         <Space size={"middle"}>
           <NavLink
+            to={`/projects/updateProject/${record.id}`}
             style={{
               background: "#1890ff",
               borderRadius: "5px",
@@ -189,7 +190,7 @@ const Home = () => {
           to={"/projects/createProject"}
           className="create-task btn btn-primary"
         >
-          Create Projects
+          Create Project
         </NavLink>
       </div>
       <Table columns={columns} dataSource={arrData} />
