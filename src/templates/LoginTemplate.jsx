@@ -5,10 +5,10 @@ const LoginTemplate = () => {
   return (
     <div>
         <div className="row login-template">
-            <div className="col-6">
+            <div className="col-6 d-none d-md-block">
                 <img src="https://st4.depositphotos.com/16959514/27403/v/450/depositphotos_274031174-stock-illustration-kanban-board-teamwork-briefing-scheme.jpg" alt="..." className='img-fluid w-100'/>
             </div>
-            <div className="col-6 outlet">
+            <div className="col-12 col-md-6 outlet">
                 <Outlet/>
             </div>
         </div>

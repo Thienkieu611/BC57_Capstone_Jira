@@ -14,11 +14,6 @@ import { Input, Button } from "antd";
 import LoginUsingFacebook from "./LoginUsingFacebook";
 
 const Login = () => {
-  //set show pass login
-  // const [showPassword, setShowPassword] = useState(false);
-  // const hanleShowPassword = () => {
-  //   setShowPassword(!showPassword);
-  // };
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const dispatch = useDispatch();
@@ -45,16 +40,9 @@ const Login = () => {
   useEffect(() => {}, []);
   return (
     <div className="container px-5 login-page">
-      <h3 className="text-center mt-5">Login to start with JiraClone</h3>
+      <h2 className="text-center mt-5">Login to start with JiraClone</h2>
       <form className="mt-5 login-form" onSubmit={loginForm.handleSubmit}>
         <div className="form-group">
-          {/* <input
-            className="form-control"
-            id="email"
-            name="email"
-            placeholder="Email"
-            onChange={loginForm.handleChange}
-          /> */}
           <Input
             size="large"
             id="email"
@@ -68,14 +56,6 @@ const Login = () => {
           </p>
         </div>
         <div className="form-group password-eye">
-          {/* <input
-            type={showPassword ? "text" : "password"}
-            className="form-control"
-            id="password"
-            name="password"
-            placeholder="Password"
-            onChange={loginForm.handleChange}
-          /> */}
 
           <Input.Password
             size="large"
@@ -89,14 +69,6 @@ const Login = () => {
             onChange={loginForm.handleChange}
             prefix={<LockOutlined />}
           />
-
-          {/* <span type="button" className=" eye-icon" onClick={hanleShowPassword}>
-            {showPassword ? (
-              <i className="fa fa-eye-slash"></i>
-            ) : (
-              <i className="fa fa-eye"></i>
-            )}
-          </span> */}
           <p className="text text-danger">
             {loginForm.errors.password && loginForm.errors.password}
           </p>
@@ -106,14 +78,6 @@ const Login = () => {
             Login
           </button>
         </div>
-        {/* <div className="form-group login-facebook text-center ">
-          <NavLink>
-            Or you can continue with
-            <span className="facebook-link">
-              <LoginUsingFacebook/>
-            </span>
-          </NavLink>
-        </div> */}
         <div className="form-group login-facebook text-center ">
             Or you can continue with <LoginUsingFacebook/>
         </div>
