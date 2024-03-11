@@ -4,7 +4,8 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createTask } from "./../utils/createTask";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import useResponsive from "./../hook/useResponsive";
 
 const CreateTask = () => {
   const editorRef = useRef(null);
@@ -21,6 +22,7 @@ const CreateTask = () => {
   const [remainHours, setRemainHours] = useState(0);
   const [listUserAssigner, setListUserAssigner] = useState();
   const [messageApi, contextHolder] = message.useMessage();
+  const windowSize = useResponsive();
 
   const info = (content) => {
     messageApi.info(content);
@@ -42,40 +44,29 @@ const CreateTask = () => {
   };
 
   useEffect(() => {
-    createTask
-      .getAllProject()
-      .then((res) => {
-        // console.log(res);
-        setAllProject(res.data.content);
-        if (res.data.content.length > 0) {
-          setIdProjectFirst(res.data.content[0].id);
+    const getData = async () => {
+      try {
+        const [projectRes, statusRes, priorityRes, taskTypeRes] =
+          await Promise.all([
+            createTask.getAllProject(),
+            createTask.getStatus(),
+            createTask.getPriority(),
+            createTask.getTaskType(),
+          ]);
+
+        setAllProject(projectRes.data.content);
+        if (projectRes.data.content.length > 0) {
+          setIdProjectFirst(projectRes.data.content[0].id);
         }
-      })
-      .catch((err) => console.log(err));
+        setStatus(statusRes.data.content);
+        setPriority(priorityRes.data.content);
+        setTaskType(taskTypeRes.data.content);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    createTask
-      .getStatus()
-      .then((res) => {
-        // console.log(res);
-        setStatus(res.data.content);
-      })
-      .catch((err) => console.log(err));
-
-    createTask
-      .getPriority()
-      .then((res) => {
-        // console.log(res);
-        setPriority(res.data.content);
-      })
-      .catch((err) => console.log(err));
-
-    createTask
-      .getTaskType()
-      .then((res) => {
-        // console.log(res);
-        setTaskType(res.data.content);
-      })
-      .catch((err) => console.log(err));
+    getData();
   }, []);
 
   const handleChange1 = (event) => {
@@ -209,7 +200,11 @@ const CreateTask = () => {
                 )}
               </div>
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Status</label>
               <select id="status" onChange={handleChange3} class="form-control">
@@ -238,7 +233,11 @@ const CreateTask = () => {
                 })}
               </select>
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Task Type</label>
               <select id="taskType" class="form-control">
@@ -285,7 +284,11 @@ const CreateTask = () => {
                 onChange={timeEst}
               />
             </div>
-            <div className="col-2"></div>
+            <div
+              className={`col-2 ${
+                windowSize.widthWindow < 768 ? "d-none" : " d-block"
+              }`}
+            ></div>
             <div className="col">
               <label className="mb-2 fw-bold">Hours spent</label>
               <InputNumber
