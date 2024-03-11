@@ -11,7 +11,7 @@ const Profile = () => {
 
 
   return (
-    <div className="container mt-5 py-4 px-5">
+    <div className="container py-4 px-5">
       <h2 className="text-center pt-5 pb-4">My Profile</h2>
       <div className="row mt-5 justify-content-center">
         <div className="col-md-6">
