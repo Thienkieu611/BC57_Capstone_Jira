@@ -1,12 +1,25 @@
-import React, { useEffect } from "react";
-import { Avatar, Tag, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
+import { Avatar, Tag, Tooltip, Button, Modal, Card } from "antd";
 import "../assets/sass/projectDetail.scss";
 import { NavLink, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProjectDetailApiAction } from "../redux/Reducers/HomeReducer";
 import { PlusOutlined, BugFilled, SnippetsFilled } from "@ant-design/icons";
+import Search from "antd/es/input/Search";
 
 const ProjectDetail = () => {
+  // set modal add member
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const { arrProjectDetail } = useSelector((state) => state.homeReducer);
   console.log(arrProjectDetail);
   const params = useParams();
@@ -71,6 +84,7 @@ const ProjectDetail = () => {
               })}
             <Tooltip title="Add member" placement="top">
               <Avatar
+                onClick={() => showModal()}
                 style={{
                   backgroundColor: "#fde3cf",
                   color: "#f56a00",
@@ -266,6 +280,29 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
+      </div>
+      <div className="modal-add-member w-100">
+        <Modal
+          className="modal-content"
+          title={`Add members to project ${arrProjectDetail.projectName}`}
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <h4>{`Add members to project ${arrProjectDetail.projectName}`}</h4>
+          <div className="search-member d-flex align-items-baseline">
+            <p className="me-5">Search users</p>
+            <Search
+              className="search-input"
+              placeholder="search members"
+              allowClear
+              onSearch={onSearch}
+              style={{
+                width: 1000,
+              }}
+            />
+          </div>
+        </Modal>
       </div>
     </div>
   );

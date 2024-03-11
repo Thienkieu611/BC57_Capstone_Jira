@@ -91,12 +91,11 @@ export const deleteProjectApiAction = (projectId) => {
 
       const action = deleteProjectAction(res.data.content);
       dispatch(action);
-      // alert("Xoá thành công !");
+
       message.success("Xoá thành công !");
     } catch (error) {
       if (error.response?.status === 403) {
-        // alert("Bạn không được phép xoá Project của người khác !");
-        message.error("Bạn không được phép xoá Project của người khác !");
+        message.error("Bạn không được phép xoá dữ liệu của người khác !");
       }
     }
   };

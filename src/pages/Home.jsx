@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Space, Table, Tag, Tooltip, Button, Modal } from "antd";
+import {
+  Avatar,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  Button,
+  Modal,
+  Popover,
+  AutoComplete,
+} from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -53,6 +63,7 @@ const Home = () => {
       onCancel() {
         setSelectedProject(null);
       },
+      width: 500,
     });
   };
 
@@ -113,14 +124,23 @@ const Home = () => {
               <Avatar src={member.avatar} alt={member.name} />
             </Tooltip>
           ))}
-          <Avatar
-            style={{
-              backgroundColor: "#fde3cf",
-              color: "#f56a00",
-              cursor: "pointer",
+          <Popover
+            title={"Add member"}
+            content={() => {
+              return (
+                <AutoComplete style={{ width: "100%" }} onSearch={onSearch} />
+              );
             }}
-            icon={<PlusOutlined />}
-          />
+          >
+            <Avatar
+              style={{
+                backgroundColor: "#fde3cf",
+                color: "#f56a00",
+                cursor: "pointer",
+              }}
+              icon={<PlusOutlined />}
+            />
+          </Popover>
         </Avatar.Group>
       ),
     },
@@ -169,7 +189,7 @@ const Home = () => {
           to={"/projects/createProject"}
           className="create-task btn btn-primary"
         >
-          Create Projectx
+          Create Projects
         </NavLink>
       </div>
       <Table columns={columns} dataSource={arrData} />
