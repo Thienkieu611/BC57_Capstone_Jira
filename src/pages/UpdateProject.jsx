@@ -112,9 +112,9 @@ const UpdateProject = () => {
           </NavLink>
           <NavLink
             className="text-decoration-none text-secondary me-2 "
-            to={"/"}
+            to={`/projects/projectDetail/${id}`}
           >
-            Projects /
+            {formik.values.projectName} /
           </NavLink>
           <span>Project settings</span>
         </p>
