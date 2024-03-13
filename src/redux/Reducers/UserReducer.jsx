@@ -17,6 +17,7 @@ const initialState = {
  userLogin: userLoginDefault,
  isLogin: false,
  userArr: [],
+ userProfile: {},
 }
 
 const UserReducer = createSlice({
@@ -38,6 +39,9 @@ const UserReducer = createSlice({
       state.isLogin = false;
     },
     updateProfileAction: (state, action) => {
+      state.userLogin = action.payload
+    },
+    editUserAction: (state, action) => {
       //console.log('Action payload:', action.payload);
       state.userProfile = action.payload;
     },
@@ -51,7 +55,7 @@ const UserReducer = createSlice({
   }
 });
 
-export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction, setUserArrayAction, deleteUserAction} = UserReducer.actions
+export const {loginAction, registerAction, logOutAction, loginFacebookAction, updateProfileAction, setUserArrayAction, deleteUserAction, editUserAction} = UserReducer.actions
 
 export default UserReducer.reducer
 
@@ -169,7 +173,7 @@ export const editUserApiAction = (updatedProfile) => {
           name: updatedProfile.name,
           phoneNumber: updatedProfile.phoneNumber,
       });
-      dispatch(updateProfileAction(res.data.content));
+      dispatch(editUserAction(res.data.content));
       message.success("User is edited successfully!");
     } catch (error) {
       console.error("Error editting user profile:", error);

@@ -33,17 +33,6 @@ import { USER_LOGIN } from "./utils/config.js";
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
 
-// Check if userLogin exists in localStorage
-const userLogin = localStorage.getItem(USER_LOGIN);
-
-// Add the beforeunload event listener
-window.addEventListener("beforeunload", () => {
-  // Dispatch the logout action when the user closes the browser or tab
-  if (userLogin) {
-    store.dispatch(logoutApiAction(userLogin));
-  }
-});
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
@@ -52,7 +41,10 @@ root.render(
         <Route path="projects" element={<HomeTemplate />}>
           <Route index element={<Home />}></Route>
           <Route path="createProject" element={<CreateProject />}></Route>
-          <Route path="updateProject/:projectId" element={<UpdateProject />}></Route>
+          <Route
+            path="updateProject/:projectId"
+            element={<UpdateProject />}
+          ></Route>
           <Route path="createTask" element={<CreateTask />}></Route>
           <Route path="user-management" element={<UserManagement />}></Route>
           <Route
