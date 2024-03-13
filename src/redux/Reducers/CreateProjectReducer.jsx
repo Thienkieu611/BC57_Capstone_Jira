@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { https } from "../../utils/config";
 
 const initialState = {
   arrUserD: [],

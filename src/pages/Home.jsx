@@ -25,7 +25,7 @@ import {
 import { NavLink } from "react-router-dom";
 
 //set search
-const onSearch = (value, _e, info) => console.log(info?.source, value);
+
 const Home = () => {
   const { arrData } = useSelector((state) => state.homeReducer);
 
@@ -66,6 +66,33 @@ const Home = () => {
       width: 500,
     });
   };
+
+  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  // const [searchValue, setSearchValue] = useState("");
+  // const [searchResult, setSearchResult] = useState([]);
+
+  // const handleSearch = (value) => {
+  //   setSearchValue(value);
+  // };
+
+  // useEffect(() => {
+  //   const results = arrData?.filter((project) =>
+  //     project.projectName.toLowerCase().includes(searchValue.toLowerCase())
+  //   );
+  //   setSearchResult(results);
+  // }, [searchValue, arrData]);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+  useEffect(() => {
+    const results = arrData.filter((project) =>
+      project.projectName.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    setSearchResult(results);
+  }, [searchValue, arrData]);
 
   const columns = [
     {
@@ -124,7 +151,7 @@ const Home = () => {
               <Avatar src={member.avatar} alt={member.name} />
             </Tooltip>
           ))}
-          <Popover
+          {/* <Popover
             title={"Add member"}
             content={() => {
               return (
@@ -140,7 +167,7 @@ const Home = () => {
               }}
               icon={<PlusOutlined />}
             />
-          </Popover>
+          </Popover> */}
         </Avatar.Group>
       ),
     },
@@ -181,7 +208,7 @@ const Home = () => {
         <Search
           placeholder="Search project name"
           allowClear
-          onSearch={onSearch}
+          onChange={handleSearchChange}
           style={{
             width: 250,
           }}
@@ -193,7 +220,7 @@ const Home = () => {
           Create Project
         </NavLink>
       </div>
-      <Table columns={columns} dataSource={arrData} />
+      <Table columns={columns} dataSource={searchResult} />
     </div>
   );
 };

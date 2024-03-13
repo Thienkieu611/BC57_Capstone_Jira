@@ -1,13 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { https } from "../../utils/config";
-import { history } from "../..";
 import { message } from "antd";
 
 const initialState = {
   arrData: [],
   arrUser: [],
-  arrProjectDetail: {},
+  arrProjectDetail: { members: [] },
 };
 
 const HomeReducer = createSlice({
@@ -28,6 +26,14 @@ const HomeReducer = createSlice({
         (project) => project.id !== action.payload
       );
     },
+    addUserProjectAction: (state, action) => {
+      state.arrProjectDetail.members.push(action.payload);
+    },
+    removeUserProjectAction: (state, action) => {
+      state.arrProjectDetail.members = state.arrProjectDetail.members.filter(
+        (member) => member.userId !== action.payload
+      );
+    },
   },
 });
 
@@ -36,6 +42,8 @@ export const {
   setArrUserAction,
   setProjectDetailAction,
   deleteProjectAction,
+  addUserProjectAction,
+  removeUserProjectAction,
 } = HomeReducer.actions;
 
 export default HomeReducer.reducer;
@@ -96,6 +104,46 @@ export const deleteProjectApiAction = (projectId) => {
     } catch (error) {
       if (error.response?.status === 403) {
         message.error("Bạn không được phép xoá dữ liệu của người khác !");
+      }
+    }
+  };
+};
+
+export const addUserProjectApiAction = (projectId, user) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.post("/api/Project/assignUserProject", {
+        projectId,
+        userId: user.userId,
+      });
+
+      const action = addUserProjectAction(user);
+
+      dispatch(action);
+    } catch (error) {
+      // Handle error
+      if (error.response?.status === 403) {
+        message.error(
+          "Bạn không có quyền truy cập vào dữ liệu của người khác !"
+        );
+      }
+    }
+  };
+};
+
+export const removeUserProjectApiAction = (projectId, userId) => {
+  return async (dispatch) => {
+    try {
+      await https.post("api/Project/removeUserFromProject", {
+        projectId,
+        userId,
+      });
+      dispatch(removeUserProjectAction(userId));
+    } catch (error) {
+      if (error.response?.status === 403) {
+        message.error(
+          "Bạn không có quyền truy cập vào dữ liệu của người khác !"
+        );
       }
     }
   };
