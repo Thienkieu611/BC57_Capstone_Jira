@@ -10,6 +10,7 @@ const Profile = () => {
 
 
 
+
   return (
     <div className="container py-4 px-5">
       <h2 className="text-center pt-5 pb-4">My Profile</h2>
