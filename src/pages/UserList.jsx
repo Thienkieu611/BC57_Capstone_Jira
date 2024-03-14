@@ -159,7 +159,7 @@ const UserList = () => {
       title: "No.",
       dataIndex: "no",
       name: "no",
-      render: (text, record, index) => <p>{index + 1}</p>,
+      render: (text, record, index) => <p>{userArr.indexOf(record) + 1}</p>,
     },
     {
       title: "Name",
