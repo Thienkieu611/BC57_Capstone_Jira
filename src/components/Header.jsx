@@ -74,10 +74,7 @@ const Header = () => {
                 Users
               </a>
               <div className="dropdown-menu" aria-labelledby="dropdownId">
-                <NavLink className="dropdown-item" to={"users-list"}>
-                  View User List
-                </NavLink>
-                <NavLink className="dropdown-item" to="user-management">
+                <NavLink className="dropdown-item" to="users-list">
                   View all users
                 </NavLink>
               </div>
