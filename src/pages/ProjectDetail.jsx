@@ -223,7 +223,7 @@ const ProjectDetail = () => {
       </p>
       <div
         className={`${
-          windowSize.widthWindow < 315
+          windowSize.widthWindow < 375
             ? "project-header"
             : "project-header d-flex"
         }`}
@@ -231,7 +231,7 @@ const ProjectDetail = () => {
         <h3 className="w-25">Board</h3>
         <div
           className={`${
-            windowSize.widthWindow < 315
+            windowSize.widthWindow < 375
               ? "d-flex align-items-center"
               : "member d-flex align-items-center"
           }`}
@@ -541,7 +541,7 @@ const ProjectDetail = () => {
                 }`}
                 style={{
                   overflow: "auto",
-                  height: windowSize.widthWindow < 315 ? "170px" : "390px",
+                  height: windowSize.widthWindow < 375 ? "170px" : "390px",
                 }}
               >
                 <h6 className="mb-3">Not yet added</h6>
@@ -552,7 +552,7 @@ const ProjectDetail = () => {
                         <div>
                           <img
                             className={`${
-                              windowSize.widthWindow < 315
+                              windowSize.widthWindow < 375
                                 ? "w-50 rounded-circle"
                                 : "w-75 rounded-circle"
                             }`}
@@ -602,7 +602,7 @@ const ProjectDetail = () => {
                         <div>
                           <img
                             className={`${
-                              windowSize.widthWindow < 315
+                              windowSize.widthWindow < 375
                                 ? "w-50 rounded-circle"
                                 : "w-75 rounded-circle"
                             }`}
