@@ -333,7 +333,7 @@ const CreateProject = () => {
               className={` ${windowSize.widthWindow < 768 ? "" : "w-50 me-3"}`}
               style={{
                 overflow: "auto",
-                height: windowSize.widthWindow ? "170px" : "390px",
+                height: windowSize.widthWindow < 375 ? "170px" : "390px",
               }}
             >
               <h6>Not yet added</h6>
@@ -345,7 +345,7 @@ const CreateProject = () => {
                         <img
                           src={item.avatar}
                           className={`${
-                            windowSize.widthWindow < 315
+                            windowSize.widthWindow < 375
                               ? "w-50 rounded-circle"
                               : "w-75 rounded-circle"
                           }`}
@@ -379,7 +379,7 @@ const CreateProject = () => {
                             <img
                               src={item.avatar}
                               className={`${
-                                windowSize.widthWindow < 315
+                                windowSize.widthWindow < 375
                                   ? "w-50 rounded-circle"
                                   : "w-75 rounded-circle"
                               }`}
