@@ -1,17 +1,97 @@
-import React, { useEffect } from "react";
-import { Avatar, Tag, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Avatar,
+  Tooltip,
+  Button,
+  Modal,
+  Select,
+  Divider,
+  Collapse,
+  Space,
+  Input,
+  message,
+  InputNumber,
+  Slider,
+} from "antd";
 import "../assets/sass/projectDetail.scss";
 import { NavLink, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getProjectDetailApiAction } from "../redux/Reducers/HomeReducer";
-import { PlusOutlined, BugFilled, SnippetsFilled } from "@ant-design/icons";
+import {
+  addUserProjectApiAction,
+  deleteTaskApiAction,
+  getAllStatusApiAction,
+  getAllUserApiAction,
+  getProjectDetailApiAction,
+  getTaskDetailApiAction,
+  removeUserProjectApiAction,
+} from "../redux/Reducers/HomeReducer";
+import {
+  PlusOutlined,
+  BugFilled,
+  SnippetsFilled,
+  DeleteOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
+import Search from "antd/es/input/Search";
+import TextArea from "antd/es/input/TextArea";
+import useResponsive from "../hook/useResponsive";
 
 const ProjectDetail = () => {
-  const { arrProjectDetail } = useSelector((state) => state.homeReducer);
-  console.log(arrProjectDetail);
-  const params = useParams();
+  const windowSize = useResponsive();
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [taskName, setTaskName] = useState("");
+  const [taskType, setTaskType] = useState("bug");
 
+  const handleCreate = () => {
+    setIsCreatingTask(false);
+    setTaskName("");
+    setTaskType("bug"); // Reset task type to default
+  };
+
+  const handleCancelCreateTask = () => {
+    setIsCreatingTask(false);
+    setTaskName("");
+    setTaskType("bug"); // Reset task type to default
+  };
+
+  // set modal add member
+  const [isModalOpen, setIsModalOpen] = useState({
+    modalAddMember: false,
+    modalViewTaskDetail: false,
+  });
+  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  const showModal = (modalName) => {
+    setIsModalOpen({
+      ...isModalOpen,
+      [modalName]: true,
+    });
+  };
+  const handleDelete = async (taskId) => {
+    const action = deleteTaskApiAction(taskId);
+    dispatch(action);
+  };
+  const handleCancel = (modalName) => {
+    setIsModalOpen({
+      ...isModalOpen,
+      [modalName]: false,
+    });
+  };
+  const { arrProjectDetail, arrUser, arrTaskDetail, arrStatus } = useSelector(
+    (state) => state.homeReducer
+  );
+  const { userLogin } = useSelector((state) => state.userReducer);
+
+  const params = useParams();
   const dispatch = useDispatch();
+
+  const getAllUserApi = async () => {
+    const action = getAllUserApiAction();
+    dispatch(action);
+  };
+
+  useEffect(() => {
+    getAllUserApi();
+  }, []);
   const getProjectDetailApi = async (projectId) => {
     const action = getProjectDetailApiAction(projectId);
     dispatch(action);
@@ -19,6 +99,41 @@ const ProjectDetail = () => {
   useEffect(() => {
     getProjectDetailApi(params.projectId);
   }, [params.projectId]);
+
+  const getTaskDetailApi = async (taskId) => {
+    const action = await getTaskDetailApiAction(taskId);
+    dispatch(action);
+    showModal("modalViewTaskDetail");
+  };
+  const getAllStatusApi = async () => {
+    const action = getAllStatusApiAction();
+    dispatch(action);
+  };
+
+  useEffect(() => {
+    getAllStatusApi();
+  }, []);
+
+  const status = arrStatus.map((sta) => sta.statusName);
+
+  const [selectedStatus, setSelectedStatus] = useState(status[0]);
+
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value);
+  };
+
+  const [selectedPriority, setSelectedPriority] = useState("high");
+
+  const handlePriorityChange = (value) => {
+    setSelectedPriority(value);
+  };
+
+  const [estimate, setEstimate] = useState(arrTaskDetail.originalEstimate);
+
+  const handleEstimateChange = (e) => {
+    setEstimate(e.target.value);
+  };
+
   const filterTasksByStatus = (statusId) => {
     return arrProjectDetail.lstTask?.filter(
       (task) => task.statusId === statusId
@@ -45,6 +160,56 @@ const ProjectDetail = () => {
         return null;
     }
   };
+
+  //add member
+  const [remainingUsers, setRemainingUsers] = useState([]);
+
+  const handleAddMember = (user) => {
+    if (user) {
+      dispatch(addUserProjectApiAction(arrProjectDetail.id, user));
+    } else {
+      message.error("Please select a user to add.");
+    }
+  };
+
+  const handleRemoveMember = (user) => {
+    dispatch(removeUserProjectApiAction(arrProjectDetail.id, user.userId));
+  };
+  useEffect(() => {
+    const usersNotAdded = arrUser.filter((user) => {
+      return !arrProjectDetail.members.find(
+        (member) => member.userId === user.userId
+      );
+    });
+    setRemainingUsers(usersNotAdded);
+  }, [arrUser, arrProjectDetail.members]);
+
+  //search
+  const [searchValue, setSearchValue] = useState("");
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+  useEffect(() => {
+    const filteredUsers = arrUser.filter((user) =>
+      user.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setRemainingUsers(filteredUsers);
+  }, [searchValue, arrUser]);
+
+  const [estimatedHours, setEstimatedHours] = useState(0);
+  const [hoursSpent, setHoursSpent] = useState(0);
+
+  const timeEst = (value) => {
+    setEstimatedHours(value);
+  };
+
+  const timeSpent = (value) => {
+    setHoursSpent(value);
+  };
+
+  const remainHours = estimatedHours - hoursSpent;
+  const disabled = estimatedHours === 0;
+
   return (
     <div className="project-detail container mt-4">
       <p>
@@ -71,6 +236,7 @@ const ProjectDetail = () => {
               })}
             <Tooltip title="Add member" placement="top">
               <Avatar
+                onClick={() => showModal("modalAddMember")}
                 style={{
                   backgroundColor: "#fde3cf",
                   color: "#f56a00",
@@ -83,16 +249,27 @@ const ProjectDetail = () => {
         </div>
       </div>
 
-      <div className="project-content d-flex justify-content-around px-4">
-        <div className="col-3 project-item">
+      <div
+        className="project-content d-flex justify-content-around px-5 row"
+        // style={{ flexWrap: "nowrap", background: "#000" }}
+      >
+        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
           <p>
             <span className="title-detail item1">BACKLOG</span>
           </p>
           <div className="detail-info">
             {filterTasksByStatus("1")?.map((task) => (
-              <div className="task-detail" key={task.alias}>
+              <div
+                className="task-detail"
+                key={task.alias}
+                style={{ cursor: "pointer" }}
+              >
                 {task.lstTaskDeTail?.map((detail, index) => (
-                  <div className="task-detail-item bg-white" key={index}>
+                  <div
+                    onClick={() => getTaskDetailApi(detail.taskId)}
+                    className="task-detail-item bg-white"
+                    key={index}
+                  >
                     <p className="m-0">{detail.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
@@ -128,21 +305,37 @@ const ProjectDetail = () => {
                 ))}
               </div>
             ))}
-
-            <button className="btn btn-success w-100 text-left">
-              <PlusOutlined /> <span>Create</span>
-            </button>
+            <div>
+              <NavLink
+                to={"/projects/createTask"}
+                className="w-100 text-decoration-none text-blackrounded border p-2 d-block btn btn-light"
+                style={{
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
+                <PlusOutlined /> Create
+              </NavLink>
+            </div>
           </div>
         </div>
-        <div className="col-3 project-item">
+        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
           <p>
             <span className="title-detail item2">SELECTED FOR DEVELOPMENT</span>
           </p>
           <div className="detail-info">
             {filterTasksByStatus("2")?.map((task) => (
-              <div className="task-detail " key={task.alias}>
+              <div
+                className="task-detail "
+                key={task.alias}
+                style={{ cursor: "pointer" }}
+              >
                 {task.lstTaskDeTail?.map((detail, index) => (
-                  <div className="task-detail-item bg-white" key={index}>
+                  <div
+                    onClick={() => getTaskDetailApi(detail.taskId)}
+                    className="task-detail-item bg-white"
+                    key={index}
+                  >
                     <p className="m-0">{detail.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
@@ -178,15 +371,23 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
-        <div className="col-3 project-item">
+        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
           <p>
             <span className="title-detail item3">IN PROGRESS</span>
           </p>
           <div className="detail-info">
             {filterTasksByStatus("3")?.map((task) => (
-              <div className="task-detail " key={task.alias}>
+              <div
+                className="task-detail "
+                key={task.alias}
+                style={{ cursor: "pointer" }}
+              >
                 {task.lstTaskDeTail?.map((detail, index) => (
-                  <div className="task-detail-item bg-white" key={index}>
+                  <div
+                    onClick={() => getTaskDetailApi(detail.taskId)}
+                    className="task-detail-item bg-white"
+                    key={index}
+                  >
                     <p className="m-0">{detail.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
@@ -222,15 +423,23 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
-        <div className="col-3 project-item">
+        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
           <p>
             <span className="title-detail item4">DONE</span>
           </p>
           <div className="detail-info">
             {filterTasksByStatus("4")?.map((task) => (
-              <div className="task-detail " key={task.alias}>
+              <div
+                className="task-detail "
+                key={task.alias}
+                style={{ cursor: "pointer" }}
+              >
                 {task.lstTaskDeTail?.map((detail, index) => (
-                  <div className="task-detail-item bg-white" key={index}>
+                  <div
+                    onClick={() => getTaskDetailApi(detail.taskId)}
+                    className="task-detail-item bg-white"
+                    key={index}
+                  >
                     <p className="m-0">{detail.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
@@ -266,6 +475,368 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
+      </div>
+      <div className="modal-add-member w-100 ">
+        <Modal
+          className="modal-content p-4"
+          open={isModalOpen.modalAddMember}
+          onCancel={() => handleCancel("modalAddMember")}
+          width={1000}
+          height={1000}
+          maskClosable={false}
+          style={{ top: "50", maxWidth: "100%", maxHeight: "90%" }}
+          footer=""
+        >
+          <div className="px-3 modal-header">
+            <h5
+              className="pt-3"
+              style={{ fontSize: windowSize.widthWindow < 585 ? "18px" : "" }}
+            >
+              Add members to project
+              <span className="text-primary">
+                {" "}
+                {arrProjectDetail.projectName}
+              </span>
+            </h5>
+            <hr />
+          </div>
+          <div className="p-3 pt-0">
+            <div className="d-flex justify-content-start align-items-baseline p-3 pb-0">
+              <p className="d-inline-block me-5 fw-medium">Search users</p>
+              <Search
+                placeholder="search members"
+                allowClear
+                onSearch={onSearch}
+                onChange={handleSearchChange}
+                className="d-inline-block ms-5"
+                style={{
+                  width: 200,
+                }}
+              />
+            </div>
+            <div
+              className={` ${
+                windowSize.widthWindow < 710
+                  ? "d-block"
+                  : "justify-content-between p-3 d-flex"
+              }  `}
+            >
+              <div
+                style={{
+                  width: windowSize.widthWindow < 710 ? "100%" : "50%",
+                }}
+              >
+                <h6 className="mb-3">Not yet added</h6>
+                <div
+                  style={{
+                    maxHeight: "320px",
+                    overflowY: "auto",
+                    fontSize: windowSize.widthWindow < 920 ? "13px" : "",
+                  }}
+                >
+                  {remainingUsers.map((user) => (
+                    <div className="d-flex justify-content-between mb-2 py-2 border-bottom">
+                      <div className="d-flex justify-content-start">
+                        <div>
+                          <img
+                            className="rounded-circle w-50"
+                            src={user.avatar}
+                          />
+                        </div>
+                        <div>
+                          <p className="mb-0">{user.name}</p>
+                          <p
+                            className="mb-0 text-secondary"
+                            style={{ fontSize: "12px" }}
+                          >
+                            User ID: {user.userId}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleAddMember(user)}
+                        className="btn px-3 bg-primary me-2 ms-2 text-white"
+                        style={{
+                          height: "35px",
+                          fontSize: windowSize.widthWindow < 920 ? "13px" : "",
+                        }}
+                      >
+                        Add
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div
+                style={{
+                  width: windowSize.widthWindow < 710 ? "100%" : "45%",
+                }}
+              >
+                <h6 className="mb-3">Already in project</h6>
+                <div
+                  style={{
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                    fontSize: windowSize.widthWindow < 920 ? "13px" : "",
+                  }}
+                >
+                  {arrProjectDetail.members.map((userExist) => (
+                    <div className="d-flex justify-content-between mb-2 py-2 border-bottom">
+                      <div className="d-flex justify-content-start">
+                        <div>
+                          <img
+                            className="rounded-circle w-50"
+                            src={userExist.avatar}
+                          />
+                        </div>
+                        <div>
+                          <p className="mb-0">{userExist.name}</p>
+                          <p
+                            className="mb-0 text-secondary"
+                            style={{ fontSize: "12px" }}
+                          >
+                            User ID: {userExist.userId}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveMember(userExist)}
+                        className="btn py-1 px-2 bg-danger text-white ms-2 ms-2"
+                        style={{
+                          height: "35px",
+                          fontSize: windowSize.widthWindow < 920 ? "13px" : "",
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </div>
+      <div className="modal-view-task-detail w-100">
+        <Modal
+          className="modal-view-content p-4"
+          open={isModalOpen.modalViewTaskDetail}
+          onCancel={() => handleCancel("modalViewTaskDetail")}
+          width={1000}
+          maskClosable={false}
+          style={{ top: "50" }}
+          footer=""
+        >
+          <div className="">
+            <div className="d-flex justify-content-between align-items-start">
+              <h6>
+                {/* {checkTaskType(arrTaskDetail?.taskTypeDetail?.taskType)}
+                {arrTaskDetail?.taskTypeDetail?.taskType
+                  .charAt(0)
+                  .toUpperCase() +
+                  arrTaskDetail?.taskTypeDetail.taskType.slice(1)} */}
+              </h6>
+              <DeleteOutlined
+                onClick={() => handleDelete(arrTaskDetail.taskId)}
+                className="text-danger me-4 fs-5"
+              />
+            </div>
+            <div className="view-task-info d-flex justify-content-between p-3">
+              <div className="task-info-left" style={{ width: "55%" }}>
+                <h4>{arrTaskDetail.taskName}</h4>
+                <div>
+                  <p>Description</p>
+                  <div>
+                    <p className="rounded border p-2">
+                      {arrTaskDetail.description}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p>Comments</p>
+                  <div className="d-flex align-items-baseline">
+                    <p className="m-0">
+                      <img
+                        className="rounded-circle w-50"
+                        src={userLogin.avatar}
+                        alt="..."
+                      />
+                    </p>
+                    <p className="rounded border w-100 p-2">Add comment</p>
+                  </div>
+                  <div style={{ maxHeight: "170px", overflowY: "auto" }}>
+                    {arrTaskDetail?.lstComment?.map((comment) => (
+                      <div>
+                        <div className="d-flex align-items-baseline">
+                          <p className="m-0">
+                            <img
+                              className="rounded-circle w-50"
+                              src={comment.avatar}
+                              alt="..."
+                            />
+                          </p>
+                          <div className="">
+                            <p className="m-0">{comment.name}</p>
+                            <p className="m-0 fw-light">
+                              {comment.commentContent}
+                            </p>
+                            <div className="text-secondary mt-3">
+                              <span className="me-3">Edit</span>
+                              <span>Delete</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="task-info-right" style={{ width: "40%" }}>
+                <Select
+                  defaultValue={selectedStatus}
+                  value={selectedStatus}
+                  className="mb-3"
+                  style={{
+                    width: 250,
+                  }}
+                  onChange={handleStatusChange}
+                  options={arrStatus.map((sta) => ({
+                    value: sta.statusName,
+                    label: sta.statusName,
+                  }))}
+                />
+
+                <div>
+                  <Collapse
+                    items={[
+                      {
+                        key: "1",
+                        label: "Detail",
+                        children: (
+                          <div className="">
+                            <div className="d-flex">
+                              <p className="me-2">Assigness</p>
+
+                              <div>
+                                {arrTaskDetail?.assigness?.map((ass) => (
+                                  <div className="d-flex align-items-center mb-2 border p-2 rounded ">
+                                    <p className="m-0">
+                                      <img
+                                        className="rounded-circle w-50"
+                                        src={ass.avatar}
+                                        alt="..."
+                                      />
+                                    </p>
+                                    <p
+                                      className={`${
+                                        windowSize.widthWindow < 1032
+                                          ? "fs-7 mb-0"
+                                          : "mb-0 me-2"
+                                      }`}
+                                    >
+                                      {ass.name}
+                                    </p>
+                                    <CloseOutlined />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="d-flex">
+                              <p className="me-4">Priority</p>
+                              <div>
+                                <Select
+                                  defaultValue={selectedPriority}
+                                  className="mb-3"
+                                  style={{
+                                    width: 120,
+                                  }}
+                                  onChange={handlePriorityChange}
+                                  options={[
+                                    {
+                                      value: "high",
+                                      label: "High",
+                                    },
+                                    {
+                                      value: "low",
+                                      label: "Low",
+                                    },
+                                    {
+                                      value: "lowest",
+                                      label: "Lowest",
+                                    },
+                                    {
+                                      value: "medium",
+                                      label: "Medium",
+                                    },
+                                  ]}
+                                />
+                              </div>
+                            </div>
+                            <div className="d-flex">
+                              <p className="me-3">Estimate</p>
+                              <div>
+                                <Space.Compact>
+                                  <Input
+                                    value={`${estimate}m`}
+                                    onChange={handleEstimateChange}
+                                  ></Input>
+                                </Space.Compact>
+                              </div>
+                            </div>
+
+                            <div className="row my-2">
+                              <label className="mb-2 fw-bold">
+                                Time Tracking
+                              </label>
+                              <div className="d-flex">
+                                <div className="col">
+                                  <InputNumber
+                                    id="hoursSpent"
+                                    className="d-block w-100 fs-6"
+                                    min={0}
+                                    value={hoursSpent}
+                                    onChange={timeSpent}
+                                  />
+                                  <label className="mb-2">Time spent</label>
+                                </div>
+                                <div></div>
+                                <div className="col ms-2">
+                                  <InputNumber
+                                    className="d-block w-100 fs-6"
+                                    id="estimatedHours"
+                                    min={0}
+                                    value={estimatedHours}
+                                    onChange={timeEst}
+                                  />
+                                  <label className="mb-2">Time remaining</label>
+                                </div>
+                              </div>
+                              <div className="px-2 mt-2">
+                                <Slider
+                                  max={arrTaskDetail.originalEstimate}
+                                  value={arrTaskDetail.timeTrackingSpent}
+                                  defaultValue={[
+                                    arrTaskDetail.timeTrackingSpent,
+                                    arrTaskDetail.timeTrackingRemaining,
+                                  ]}
+                                  disabled={disabled}
+                                />
+                                <div className="d-flex justify-content-between">
+                                  <p>{hoursSpent}m logged</p>
+                                  <p>{remainHours}m remaining</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ),
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

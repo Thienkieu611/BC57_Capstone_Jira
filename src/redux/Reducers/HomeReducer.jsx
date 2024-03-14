@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { https } from "../../utils/config";
-import { history } from "../..";
 import { message } from "antd";
 
 const initialState = {
   arrData: [],
   arrUser: [],
-  arrProjectDetail: {},
+  arrProjectDetail: { members: [] },
+  arrTaskDetail: {},
+  arrStatus: [],
 };
 
 const HomeReducer = createSlice({
@@ -28,6 +28,25 @@ const HomeReducer = createSlice({
         (project) => project.id !== action.payload
       );
     },
+    addUserProjectAction: (state, action) => {
+      state.arrProjectDetail.members.push(action.payload);
+    },
+    removeUserProjectAction: (state, action) => {
+      state.arrProjectDetail.members = state.arrProjectDetail.members.filter(
+        (member) => member.userId !== action.payload
+      );
+    },
+    setTaskDetailAction: (state, action) => {
+      state.arrTaskDetail = action.payload;
+    },
+    setStatusGetAllAction: (state, action) => {
+      state.arrStatus = action.payload;
+    },
+    deleteTaskAction: (state, action) => {
+      state.arrProjectDetail.lstTask = state.arrProjectDetail.lstTask.filter(
+        (task) => task.taskId !== action.payload
+      );
+    },
   },
 });
 
@@ -36,6 +55,11 @@ export const {
   setArrUserAction,
   setProjectDetailAction,
   deleteProjectAction,
+  addUserProjectAction,
+  removeUserProjectAction,
+  setTaskDetailAction,
+  setStatusGetAllAction,
+  deleteTaskAction,
 } = HomeReducer.actions;
 
 export default HomeReducer.reducer;
@@ -91,12 +115,98 @@ export const deleteProjectApiAction = (projectId) => {
 
       const action = deleteProjectAction(res.data.content);
       dispatch(action);
-      // alert("Xoá thành công !");
+
       message.success("Xoá thành công !");
     } catch (error) {
       if (error.response?.status === 403) {
-        // alert("Bạn không được phép xoá Project của người khác !");
-        message.error("Bạn không được phép xoá Project của người khác !");
+        message.error("Bạn không được phép xoá dữ liệu của người khác !");
+      }
+    }
+  };
+};
+
+export const addUserProjectApiAction = (projectId, user) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.post("/api/Project/assignUserProject", {
+        projectId,
+        userId: user.userId,
+      });
+
+      const action = addUserProjectAction(user);
+
+      dispatch(action);
+    } catch (error) {
+      // Handle error
+      if (error.response?.status === 403) {
+        message.error(
+          "Bạn không có quyền truy cập vào dữ liệu của người khác !"
+        );
+      }
+    }
+  };
+};
+
+export const removeUserProjectApiAction = (projectId, userId) => {
+  return async (dispatch) => {
+    try {
+      await https.post("api/Project/removeUserFromProject", {
+        projectId,
+        userId,
+      });
+      dispatch(removeUserProjectAction(userId));
+    } catch (error) {
+      if (error.response?.status === 403) {
+        message.error(
+          "Bạn không có quyền truy cập vào dữ liệu của người khác !"
+        );
+      }
+    }
+  };
+};
+
+export const getTaskDetailApiAction = (taskId) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.get(
+        `/api/Project/getTaskDetail?taskId=${taskId}`
+      );
+      const action = setTaskDetailAction(res.data.content);
+      dispatch(action);
+    } catch (error) {
+      console.error("Error getTaskDetail project:", error);
+    }
+  };
+};
+
+export const getAllStatusApiAction = () => {
+  return async (dispatch) => {
+    try {
+      const res = await https.get("/api/Status/getAll");
+
+      const action = setStatusGetAllAction(res.data.content);
+      dispatch(action);
+    } catch (error) {
+      console.error("Error getAllstatus project:", error);
+    }
+  };
+};
+
+export const deleteTaskApiAction = (taskId) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.delete(
+        `/api/Project/removeTask?taskId=${taskId}
+        `
+      );
+
+      const action = deleteTaskAction(res.data.content);
+      dispatch(action);
+
+      message.success("Xoá thành công !");
+    } catch (error) {
+      if (error.response?.status === 403) {
+        message.error("Bạn không được phép xoá dữ liệu của người khác !");
       }
     }
   };
