@@ -34,7 +34,7 @@ import {
 } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import TextArea from "antd/es/input/TextArea";
-import useResponsive from "../hook/useResponsive";
+import useResponsive from "./../hook/useResponsive.js";
 
 const ProjectDetail = () => {
   const windowSize = useResponsive();
@@ -221,9 +221,21 @@ const ProjectDetail = () => {
         </NavLink>
         <span>/ {arrProjectDetail.projectName}</span>
       </p>
-      <div className="project-header d-flex">
+      <div
+        className={`${
+          windowSize.widthWindow < 315
+            ? "project-header"
+            : "project-header d-flex"
+        }`}
+      >
         <h3 className="w-25">Board</h3>
-        <div className="member d-flex align-items-center">
+        <div
+          className={`${
+            windowSize.widthWindow < 315
+              ? "d-flex align-items-center"
+              : "member d-flex align-items-center"
+          }`}
+        >
           <p className="m-0">Members</p>
           <div>
             {arrProjectDetail.members &&
@@ -500,7 +512,9 @@ const ProjectDetail = () => {
             </h5>
             <hr />
           </div>
-          <div className="p-3 pt-0">
+          <div
+            className={`${windowSize.widthWindow < 768 ? "pt-0" : "p-3 pt-0"}`}
+          >
             <div className="d-flex justify-content-start align-items-baseline p-3 pb-0">
               <p className="d-inline-block me-5 fw-medium">Search users</p>
               <Search
@@ -516,35 +530,37 @@ const ProjectDetail = () => {
             </div>
             <div
               className={` ${
-                windowSize.widthWindow < 710
-                  ? "d-block"
+                windowSize.widthWindow < 768
+                  ? "h-100"
                   : "justify-content-between p-3 d-flex"
               }  `}
             >
               <div
+                className={` ${
+                  windowSize.widthWindow < 768 ? "" : "w-50 me-3"
+                }`}
                 style={{
-                  width: windowSize.widthWindow < 710 ? "100%" : "50%",
+                  overflow: "auto",
+                  height: windowSize.widthWindow < 315 ? "170px" : "390px",
                 }}
               >
                 <h6 className="mb-3">Not yet added</h6>
-                <div
-                  style={{
-                    maxHeight: "320px",
-                    overflowY: "auto",
-                    fontSize: windowSize.widthWindow < 920 ? "13px" : "",
-                  }}
-                >
+                <div>
                   {remainingUsers.map((user) => (
                     <div className="d-flex justify-content-between mb-2 py-2 border-bottom">
                       <div className="d-flex justify-content-start">
                         <div>
                           <img
-                            className="rounded-circle w-50"
+                            className={`${
+                              windowSize.widthWindow < 315
+                                ? "w-50 rounded-circle"
+                                : "w-75 rounded-circle"
+                            }`}
                             src={user.avatar}
                           />
                         </div>
-                        <div>
-                          <p className="mb-0">{user.name}</p>
+                        <div className="text-truncate">
+                          <p className="mb-0 ">{user.name}</p>
                           <p
                             className="mb-0 text-secondary"
                             style={{ fontSize: "12px" }}
@@ -585,7 +601,11 @@ const ProjectDetail = () => {
                       <div className="d-flex justify-content-start">
                         <div>
                           <img
-                            className="rounded-circle w-50"
+                            className={`${
+                              windowSize.widthWindow < 315
+                                ? "w-50 rounded-circle"
+                                : "w-75 rounded-circle"
+                            }`}
                             src={userExist.avatar}
                           />
                         </div>
@@ -641,8 +661,17 @@ const ProjectDetail = () => {
                 className="text-danger me-4 fs-5"
               />
             </div>
-            <div className="view-task-info d-flex justify-content-between p-3">
-              <div className="task-info-left" style={{ width: "55%" }}>
+            <div
+              className={`${
+                windowSize.widthWindow < 768
+                  ? ""
+                  : "view-task-info d-flex justify-content-between p-3"
+              }`}
+            >
+              <div
+                className="task-info-left"
+                style={{ width: windowSize.widthWindow < 768 ? "" : "55%" }}
+              >
                 <h4>{arrTaskDetail.taskName}</h4>
                 <div>
                   <p>Description</p>
@@ -691,13 +720,16 @@ const ProjectDetail = () => {
                   </div>
                 </div>
               </div>
-              <div className="task-info-right" style={{ width: "40%" }}>
+              <div
+                className="task-info-right"
+                style={{ width: windowSize.widthWindow < 768 ? "" : "40%" }}
+              >
                 <Select
                   defaultValue={selectedStatus}
                   value={selectedStatus}
                   className="mb-3"
                   style={{
-                    width: 250,
+                    width: windowSize.widthWindow < 768 ? "100%" : 250,
                   }}
                   onChange={handleStatusChange}
                   options={arrStatus.map((sta) => ({
@@ -714,7 +746,11 @@ const ProjectDetail = () => {
                         label: "Detail",
                         children: (
                           <div className="">
-                            <div className="d-flex">
+                            <div
+                              className={`${
+                                windowSize.widthWindow < 768 ? "" : "d-flex"
+                              }`}
+                            >
                               <p className="me-2">Assigness</p>
 
                               <div>
@@ -748,7 +784,7 @@ const ProjectDetail = () => {
                                   defaultValue={selectedPriority}
                                   className="mb-3"
                                   style={{
-                                    width: 120,
+                                    width: 110,
                                   }}
                                   onChange={handlePriorityChange}
                                   options={[
