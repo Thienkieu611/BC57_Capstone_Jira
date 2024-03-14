@@ -273,7 +273,7 @@ const CreateTask = () => {
           <div className="row my-2">
             <label className="mb-2 fw-bold">Time Tracking</label>
             <div className="col">
-              {windowSize.widthWindow < 315 ? (
+              {windowSize.widthWindow < 375 ? (
                 <label className="mb-2 fw-bold">Total Estimated</label>
               ) : (
                 <label className="mb-2 fw-bold">Total Estimated Hours</label>
