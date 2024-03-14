@@ -333,7 +333,7 @@ const CreateProject = () => {
               className={` ${windowSize.widthWindow < 768 ? "" : "w-50 me-3"}`}
               style={{
                 overflow: "auto",
-                height: windowSize.widthWindow ? "170px" : "390px",
+                height: windowSize.widthWindow < 315 ? "170px" : "390px",
               }}
             >
               <h6>Not yet added</h6>
