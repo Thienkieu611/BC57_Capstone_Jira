@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Tooltip,
-  Button,
   Modal,
   Select,
-  Divider,
   Collapse,
   Space,
   Input,
@@ -33,7 +31,6 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-import TextArea from "antd/es/input/TextArea";
 import useResponsive from "./../hook/useResponsive.js";
 
 const ProjectDetail = () => {
@@ -45,7 +42,7 @@ const ProjectDetail = () => {
   const handleCreate = () => {
     setIsCreatingTask(false);
     setTaskName("");
-    setTaskType("bug"); // Reset task type to default
+    setTaskType("bug");
   };
 
   const handleCancelCreateTask = () => {
@@ -79,6 +76,8 @@ const ProjectDetail = () => {
   const { arrProjectDetail, arrUser, arrTaskDetail, arrStatus } = useSelector(
     (state) => state.homeReducer
   );
+  console.log(arrTaskDetail);
+
   const { userLogin } = useSelector((state) => state.userReducer);
 
   const params = useParams();
@@ -116,7 +115,7 @@ const ProjectDetail = () => {
 
   const status = arrStatus.map((sta) => sta.statusName);
 
-  const [selectedStatus, setSelectedStatus] = useState(status[0]);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const handleStatusChange = (value) => {
     setSelectedStatus(value);
@@ -160,6 +159,32 @@ const ProjectDetail = () => {
         return null;
     }
   };
+  const checkStatus = (statusId) => {
+    switch (statusId) {
+      case "1":
+        return "BACKLOG";
+      case "2":
+        return "SELECTED FOR DEVELOPMENT";
+      case "3":
+        return "IN PROGRESS";
+      case "4":
+        return "DONE";
+    }
+  };
+  const checkSelectPriority = (priorityId) => {
+    switch (priorityId) {
+      case 1:
+        return "High";
+      case 2:
+        return "Medium";
+      case 3:
+        return "Low";
+      case 4:
+        return "Lowest";
+    }
+  };
+  const hello = checkSelectPriority(arrTaskDetail.priorityId);
+  console.log(hello);
 
   //add member
   const [remainingUsers, setRemainingUsers] = useState([]);
@@ -196,19 +221,34 @@ const ProjectDetail = () => {
     setRemainingUsers(filteredUsers);
   }, [searchValue, arrUser]);
 
-  const [estimatedHours, setEstimatedHours] = useState(0);
-  const [hoursSpent, setHoursSpent] = useState(0);
+  const [estimatedHours, setEstimatedHours] = useState(
+    arrTaskDetail.timeTrackingRemaining
+  );
+  const [hoursSpent, setHoursSpent] = useState(arrTaskDetail.timeTrackingSpent);
+  const [sliderValue, setSliderValue] = useState(0);
 
+  useEffect(() => {
+    setEstimatedHours(arrTaskDetail.timeTrackingRemaining);
+    setHoursSpent(arrTaskDetail.timeTrackingSpent);
+    setSliderValue(arrTaskDetail.timeTrackingSpent);
+  }, [arrTaskDetail]);
   const timeEst = (value) => {
     setEstimatedHours(value);
+    updateSliderValue();
   };
 
   const timeSpent = (value) => {
     setHoursSpent(value);
+    updateSliderValue();
   };
 
-  const remainHours = estimatedHours - hoursSpent;
+  // const remainHours = estimatedHours - hoursSpent;
   const disabled = estimatedHours === 0;
+  const updateSliderValue = () => {
+    const newValue = hoursSpent + estimatedHours;
+
+    setSliderValue(newValue);
+  };
 
   return (
     <div className="project-detail container mt-4">
@@ -261,10 +301,7 @@ const ProjectDetail = () => {
         </div>
       </div>
 
-      <div
-        className="project-content d-flex justify-content-around px-5 row"
-        // style={{ flexWrap: "nowrap", background: "#000" }}
-      >
+      <div className="project-content d-flex justify-content-around px-5 row">
         <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
           <p>
             <span className="title-detail item1">BACKLOG</span>
@@ -310,8 +347,6 @@ const ProjectDetail = () => {
                           ))}
                         </Avatar.Group>
                       </div>
-
-                      {/* <CheckSquareFilled className="text-primary" /> */}
                     </div>
                   </div>
                 ))}
@@ -725,8 +760,8 @@ const ProjectDetail = () => {
                 style={{ width: windowSize.widthWindow < 768 ? "" : "40%" }}
               >
                 <Select
-                  defaultValue={selectedStatus}
-                  value={selectedStatus}
+                  defaultValue={checkStatus(arrTaskDetail.statusId)}
+                  value={checkStatus(arrTaskDetail.statusId)}
                   className="mb-3"
                   style={{
                     width: windowSize.widthWindow < 768 ? "100%" : 250,
@@ -781,7 +816,12 @@ const ProjectDetail = () => {
                               <p className="me-4">Priority</p>
                               <div>
                                 <Select
-                                  defaultValue={selectedPriority}
+                                  defaultValue={checkSelectPriority(
+                                    arrTaskDetail.priorityId
+                                  )}
+                                  value={checkSelectPriority(
+                                    arrTaskDetail.priorityId
+                                  )}
                                   className="mb-3"
                                   style={{
                                     width: 110,
@@ -813,7 +853,7 @@ const ProjectDetail = () => {
                               <div>
                                 <Space.Compact>
                                   <Input
-                                    value={`${estimate}m`}
+                                    value={`${arrTaskDetail.originalEstimate}m`}
                                     onChange={handleEstimateChange}
                                   ></Input>
                                 </Space.Compact>
@@ -849,17 +889,15 @@ const ProjectDetail = () => {
                               </div>
                               <div className="px-2 mt-2">
                                 <Slider
-                                  max={arrTaskDetail.originalEstimate}
-                                  value={arrTaskDetail.timeTrackingSpent}
-                                  defaultValue={[
-                                    arrTaskDetail.timeTrackingSpent,
-                                    arrTaskDetail.timeTrackingRemaining,
-                                  ]}
+                                  max={"5"}
+                                  value={sliderValue}
                                   disabled={disabled}
                                 />
                                 <div className="d-flex justify-content-between">
                                   <p>{hoursSpent}m logged</p>
-                                  <p>{remainHours}m remaining</p>
+                                  <p>
+                                    {estimatedHours - hoursSpent}m remaining
+                                  </p>
                                 </div>
                               </div>
                             </div>
