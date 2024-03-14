@@ -23,10 +23,13 @@ import {
   getAllProjectApiAction,
 } from "../redux/Reducers/HomeReducer";
 import { NavLink } from "react-router-dom";
+import "../assets/sass/home.scss";
+import useResponsive from "../hook/useResponsive";
 
 //set search
 
 const Home = () => {
+  const windowSize = useResponsive();
   const { arrData } = useSelector((state) => state.homeReducer);
 
   const dispatch = useDispatch();
@@ -68,19 +71,6 @@ const Home = () => {
   };
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
-  // const [searchValue, setSearchValue] = useState("");
-  // const [searchResult, setSearchResult] = useState([]);
-
-  // const handleSearch = (value) => {
-  //   setSearchValue(value);
-  // };
-
-  // useEffect(() => {
-  //   const results = arrData?.filter((project) =>
-  //     project.projectName.toLowerCase().includes(searchValue.toLowerCase())
-  //   );
-  //   setSearchResult(results);
-  // }, [searchValue, arrData]);
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const handleSearchChange = (e) => {
@@ -100,6 +90,7 @@ const Home = () => {
       dataIndex: "id",
       key: "id",
       width: "10%",
+      fixed: "left",
       sorter: (a, b) => a.id - b.id,
     },
     {
@@ -151,29 +142,13 @@ const Home = () => {
               <Avatar src={member.avatar} alt={member.name} />
             </Tooltip>
           ))}
-          {/* <Popover
-            title={"Add member"}
-            content={() => {
-              return (
-                <AutoComplete style={{ width: "100%" }} onSearch={onSearch} />
-              );
-            }}
-          >
-            <Avatar
-              style={{
-                backgroundColor: "#fde3cf",
-                color: "#f56a00",
-                cursor: "pointer",
-              }}
-              icon={<PlusOutlined />}
-            />
-          </Popover> */}
         </Avatar.Group>
       ),
     },
     {
       title: "Actions",
       key: "action",
+      fixed: "right",
       render: (text, record, index) => (
         <Space size={"middle"}>
           <NavLink
@@ -202,10 +177,21 @@ const Home = () => {
   ];
 
   return (
-    <div className="container">
+    <div
+      style={
+        windowSize.widthWindow < 768
+          ? {
+              margin: "0 auto",
+              overflowX: "auto",
+            }
+          : {}
+      }
+      className="container"
+    >
       <h2 className="text-center py-5">Projects Management</h2>
       <div className="project-top d-flex justify-content-between mb-4">
         <Search
+          className="search-project"
           placeholder="Search project name"
           allowClear
           onChange={handleSearchChange}
@@ -220,7 +206,18 @@ const Home = () => {
           Create Project
         </NavLink>
       </div>
-      <Table columns={columns} dataSource={searchResult} />
+
+      <div
+        style={
+          windowSize.widthWindow < 768
+            ? {
+                overflowX: "auto",
+              }
+            : {}
+        }
+      >
+        <Table columns={columns} dataSource={searchResult} />
+      </div>
     </div>
   );
 };

@@ -1,6 +1,14 @@
 .project-detail {
     p {
+
         font-size: 15px;
+
+        a {
+            @media screen and (max-width: 991px) {
+                padding-left: 48px;
+
+            }
+        }
 
         span {
             font-weight: 400;
@@ -10,6 +18,11 @@
     }
 
     .project-header {
+        @media screen and (max-width: 991px) {
+            padding-left: 48px;
+
+        }
+
         h3 {}
 
         .member {
@@ -29,6 +42,12 @@
     }
 
     .project-content {
+        flex-wrap: nowrap;
+
+        @media screen and (max-width: 991px) {
+            flex-wrap: wrap;
+
+        }
 
         .project-item {
             background-color: #f3f4f6;
@@ -46,6 +65,11 @@
                     padding: 5px;
                     border-radius: 5px;
                     letter-spacing: 1px;
+
+                    @media screen and (max-width: 1200px) {
+                        font-size: 11px;
+
+                    }
                 }
 
                 .item1 {
@@ -66,6 +90,7 @@
             }
 
             .detail-info {
+
                 .task-detail {
                     .task-detail-item {
                         padding: 15px 10px;
@@ -100,19 +125,15 @@
 
                 }
 
-                button {
-                    background: #f3f4f6;
-                    color: black;
-                    font-weight: 400;
-                    font-size: 15px;
-                    border: 1px solid transparent;
-                    text-align: left;
+                a {
 
-                    &:hover {
-                        background-color: #d1d5db;
-                        transition: all .5s;
-                    }
+                    font-size: 14px;
+
+
                 }
+
+
+
 
 
             }

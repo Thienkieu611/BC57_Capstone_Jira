@@ -12,8 +12,11 @@ import {
 } from "@ant-design/icons";
 import { Input, Button } from "antd";
 import LoginUsingFacebook from "./LoginUsingFacebook";
+import { TOKEN, USER_LOGIN } from "../utils/config";
 
 const Login = () => {
+  localStorage.removeItem(TOKEN);
+    localStorage.removeItem(USER_LOGIN);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const dispatch = useDispatch();

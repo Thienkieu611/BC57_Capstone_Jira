@@ -6,6 +6,8 @@ const initialState = {
   arrData: [],
   arrUser: [],
   arrProjectDetail: { members: [] },
+  arrTaskDetail: {},
+  arrStatus: [],
 };
 
 const HomeReducer = createSlice({
@@ -34,6 +36,17 @@ const HomeReducer = createSlice({
         (member) => member.userId !== action.payload
       );
     },
+    setTaskDetailAction: (state, action) => {
+      state.arrTaskDetail = action.payload;
+    },
+    setStatusGetAllAction: (state, action) => {
+      state.arrStatus = action.payload;
+    },
+    deleteTaskAction: (state, action) => {
+      state.arrProjectDetail.lstTask = state.arrProjectDetail.lstTask.filter(
+        (task) => task.taskId !== action.payload
+      );
+    },
   },
 });
 
@@ -44,6 +57,9 @@ export const {
   deleteProjectAction,
   addUserProjectAction,
   removeUserProjectAction,
+  setTaskDetailAction,
+  setStatusGetAllAction,
+  deleteTaskAction,
 } = HomeReducer.actions;
 
 export default HomeReducer.reducer;
@@ -144,6 +160,53 @@ export const removeUserProjectApiAction = (projectId, userId) => {
         message.error(
           "Bạn không có quyền truy cập vào dữ liệu của người khác !"
         );
+      }
+    }
+  };
+};
+
+export const getTaskDetailApiAction = (taskId) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.get(
+        `/api/Project/getTaskDetail?taskId=${taskId}`
+      );
+      const action = setTaskDetailAction(res.data.content);
+      dispatch(action);
+    } catch (error) {
+      console.error("Error getTaskDetail project:", error);
+    }
+  };
+};
+
+export const getAllStatusApiAction = () => {
+  return async (dispatch) => {
+    try {
+      const res = await https.get("/api/Status/getAll");
+
+      const action = setStatusGetAllAction(res.data.content);
+      dispatch(action);
+    } catch (error) {
+      console.error("Error getAllstatus project:", error);
+    }
+  };
+};
+
+export const deleteTaskApiAction = (taskId) => {
+  return async (dispatch) => {
+    try {
+      const res = await https.delete(
+        `/api/Project/removeTask?taskId=${taskId}
+        `
+      );
+
+      const action = deleteTaskAction(res.data.content);
+      dispatch(action);
+
+      message.success("Xoá thành công !");
+    } catch (error) {
+      if (error.response?.status === 403) {
+        message.error("Bạn không được phép xoá dữ liệu của người khác !");
       }
     }
   };

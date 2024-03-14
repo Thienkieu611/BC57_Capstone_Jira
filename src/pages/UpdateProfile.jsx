@@ -59,8 +59,16 @@ const UpdateProfile = () => {
         ),
     }),
     onSubmit: (values) => {
-        const action = updateProfileApiAction(values);
-        dispatch(action)
+      dispatch(updateProfileApiAction(values)).then(() => {
+        // Update localStorage after profile update
+        const updatedUserLogin = {
+          ...userLogin,
+          email: values.email,
+          name: values.name,
+          phoneNumber: values.phoneNumber,
+        };
+        localStorage.setItem("userLogin", JSON.stringify(updatedUserLogin));
+      });
     },
   });
 
