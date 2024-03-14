@@ -21,7 +21,6 @@ const UpdateProject = () => {
   );
   const [messageApi, contextHolder] = message.useMessage();
   const { projectId } = useParams();
-  console.log(projectId);
 
   const info = (content) => {
     messageApi.info(content);
@@ -65,9 +64,13 @@ const UpdateProject = () => {
       value.description = valueD;
       if (value.categoryId.id) {
         value.categoryId = value.categoryId.id;
+      } else {
+        value.categoryId = value.categoryId;
       }
       value.id = id;
       value.creator = creator.id;
+
+      console.log(value);
 
       updateProject
         .putProjectDetail(id, value)
@@ -156,8 +159,8 @@ const UpdateProject = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               class="form-control"
-              name="projectCategory"
-              id="projectCategory"
+              name="categoryId"
+              id="categoryId"
               value={formik.values.categoryId.id}
             >
               {projectCategoryData.map((item, index) => {
