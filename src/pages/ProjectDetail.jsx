@@ -22,6 +22,9 @@ import {
   getProjectDetailApiAction,
   getTaskDetailApiAction,
   removeUserProjectApiAction,
+  setTaskDetailAction,
+  updateArrProjectDetailApiAction,
+  updateTaskApiAction,
 } from "../redux/Reducers/HomeReducer";
 import {
   PlusOutlined,
@@ -32,6 +35,7 @@ import {
 } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import useResponsive from "./../hook/useResponsive.js";
+import { https } from "../utils/config.js";
 
 const ProjectDetail = () => {
   const windowSize = useResponsive();
@@ -76,7 +80,6 @@ const ProjectDetail = () => {
   const { arrProjectDetail, arrUser, arrTaskDetail, arrStatus } = useSelector(
     (state) => state.homeReducer
   );
-  console.log(arrTaskDetail);
 
   const { userLogin } = useSelector((state) => state.userReducer);
 
@@ -104,6 +107,7 @@ const ProjectDetail = () => {
     dispatch(action);
     showModal("modalViewTaskDetail");
   };
+
   const getAllStatusApi = async () => {
     const action = getAllStatusApiAction();
     dispatch(action);
@@ -133,11 +137,6 @@ const ProjectDetail = () => {
     setEstimate(e.target.value);
   };
 
-  const filterTasksByStatus = (statusId) => {
-    return arrProjectDetail.lstTask?.filter(
-      (task) => task.statusId === statusId
-    );
-  };
   const checkTaskType = (taskType) => {
     if (taskType === "bug") {
       return <BugFilled className="text-danger me-2" />;
@@ -184,7 +183,6 @@ const ProjectDetail = () => {
     }
   };
   const hello = checkSelectPriority(arrTaskDetail.priorityId);
-  console.log(hello);
 
   //add member
   const [remainingUsers, setRemainingUsers] = useState([]);
@@ -208,6 +206,102 @@ const ProjectDetail = () => {
     });
     setRemainingUsers(usersNotAdded);
   }, [arrUser, arrProjectDetail.members]);
+
+  //drag and drop
+  const [arrProjectDetails, setArrProjectDetails] = useState(arrProjectDetail);
+  useEffect(() => {
+    setArrProjectDetails(arrProjectDetail);
+  }, [arrProjectDetail]);
+  const filterTasksByStatus = (statusId) => {
+    if (!arrProjectDetails || !arrProjectDetails?.lstTask) return [];
+    const updatedArrProjectDetail = { ...arrProjectDetails };
+    updatedArrProjectDetail.lstTask = updatedArrProjectDetail.lstTask?.filter(
+      (task) => task.statusId === statusId
+    );
+    return updatedArrProjectDetail.lstTask;
+  };
+
+  const handleDragStart = (event, taskId) => {
+    event.dataTransfer.setData("taskId", taskId);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const checkStatusName = (statusName) => {
+    switch (statusName) {
+      case "BACKLOG":
+        return "1";
+      case "SELECTED FOR DEVELOPMENT":
+        return "2";
+      case "IN PROGRESS":
+        return "3";
+      case "DONE":
+        return "4";
+    }
+  };
+
+  const handleDrop = async (event, status) => {
+    event.preventDefault();
+    const taskId = event.dataTransfer.getData("taskId");
+
+    const res = await https.get(`/api/Project/getTaskDetail?taskId=${taskId}`);
+    const action = setTaskDetailAction(res.data.content);
+
+    const task = action.payload;
+
+    if (!arrProjectDetails || !arrProjectDetails?.lstTask) {
+      console.error("arrProjectDetail is not defined or has invalid structure");
+      return;
+    }
+    // Tạo một bản sao của arrProjectDetail để cập nhật dữ liệu
+    const updatedArrProjectDetail = JSON.parse(
+      JSON.stringify(arrProjectDetails)
+    );
+
+    const dropStatusIndex = updatedArrProjectDetail.lstTask.findIndex(
+      (taskItem) => taskItem.statusName === status
+    );
+
+    if (dropStatusIndex === -1) {
+      console.error("Invalid drop status:", status);
+      return;
+    }
+
+    const taskExists = updatedArrProjectDetail.lstTask[
+      dropStatusIndex
+    ].lstTaskDeTail.some((detail) => detail?.taskId === task.taskId);
+
+    if (!taskExists) {
+      updatedArrProjectDetail.lstTask[dropStatusIndex].lstTaskDeTail.push(task);
+    }
+
+    // Xóa task khỏi danh sách tasks của status gốc
+    updatedArrProjectDetail.lstTask.forEach((taskItem) => {
+      if (taskItem.statusName !== status) {
+        taskItem.lstTaskDeTail = taskItem.lstTaskDeTail.filter(
+          (detail) => detail?.taskId !== task.taskId
+        );
+      }
+    });
+
+    const statusId = checkStatusName(status);
+    const updateRes = await https.put("/api/Project/updateStatus", {
+      taskId: task.taskId,
+      statusId: statusId,
+    });
+
+    if (updateRes.status === 200) {
+      setArrProjectDetails(updatedArrProjectDetail);
+    } else {
+      console.error("Failed to update task");
+    }
+  };
+
+  useEffect(() => {
+    dispatch(updateArrProjectDetailApiAction(arrProjectDetails));
+  }, [arrProjectDetails, dispatch]);
 
   //search
   const [searchValue, setSearchValue] = useState("");
@@ -302,7 +396,11 @@ const ProjectDetail = () => {
       </div>
 
       <div className="project-content d-flex justify-content-around px-5 row">
-        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
+        <div
+          className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item"
+          onDragOver={(event) => handleDragOver(event)}
+          onDrop={(event) => handleDrop(event, "BACKLOG")}
+        >
           <p>
             <span className="title-detail item1">BACKLOG</span>
           </p>
@@ -310,25 +408,29 @@ const ProjectDetail = () => {
             {filterTasksByStatus("1")?.map((task) => (
               <div
                 className="task-detail"
-                key={task.alias}
+                key={task?.alias}
                 style={{ cursor: "pointer" }}
               >
-                {task.lstTaskDeTail?.map((detail, index) => (
+                {task?.lstTaskDeTail?.map((detail, index) => (
                   <div
                     onClick={() => getTaskDetailApi(detail.taskId)}
                     className="task-detail-item bg-white"
                     key={index}
+                    draggable="true"
+                    onDragStart={(event) =>
+                      handleDragStart(event, detail.taskId)
+                    }
                   >
-                    <p className="m-0">{detail.taskName}</p>
+                    <p className="m-0">{detail?.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
-                        {checkTaskType(detail.taskTypeDetail.taskType)}
+                        {checkTaskType(detail?.taskTypeDetail?.taskType)}
                         <span
                           className={checkPriority(
-                            detail.priorityTask.priority
+                            detail?.priorityTask?.priority
                           )}
                         >
-                          {detail.priorityTask.priority}
+                          {detail?.priorityTask?.priority}
                         </span>
                       </div>
                       <div className="task-right">
@@ -340,7 +442,7 @@ const ProjectDetail = () => {
                             backgroundColor: "#fde3cf",
                           }}
                         >
-                          {detail.assigness?.map((member) => (
+                          {detail?.assigness?.map((member) => (
                             <Tooltip title={member.name} placement="top">
                               <Avatar src={member.avatar} alt={member.name} />
                             </Tooltip>
@@ -366,7 +468,11 @@ const ProjectDetail = () => {
             </div>
           </div>
         </div>
-        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
+        <div
+          className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item"
+          onDragOver={(event) => handleDragOver(event)}
+          onDrop={(event) => handleDrop(event, "SELECTED FOR DEVELOPMENT")}
+        >
           <p>
             <span className="title-detail item2">SELECTED FOR DEVELOPMENT</span>
           </p>
@@ -374,7 +480,7 @@ const ProjectDetail = () => {
             {filterTasksByStatus("2")?.map((task) => (
               <div
                 className="task-detail "
-                key={task.alias}
+                key={task?.alias}
                 style={{ cursor: "pointer" }}
               >
                 {task.lstTaskDeTail?.map((detail, index) => (
@@ -382,17 +488,21 @@ const ProjectDetail = () => {
                     onClick={() => getTaskDetailApi(detail.taskId)}
                     className="task-detail-item bg-white"
                     key={index}
+                    draggable="true"
+                    onDragStart={(event) =>
+                      handleDragStart(event, detail?.taskId)
+                    }
                   >
-                    <p className="m-0">{detail.taskName}</p>
+                    <p className="m-0">{detail?.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
-                        {checkTaskType(detail.taskTypeDetail.taskType)}
+                        {checkTaskType(detail?.taskTypeDetail?.taskType)}
                         <span
                           className={checkPriority(
-                            detail.priorityTask.priority
+                            detail?.priorityTask?.priority
                           )}
                         >
-                          {detail.priorityTask.priority}
+                          {detail?.priorityTask?.priority}
                         </span>
                       </div>
                       <div className="task-right">
@@ -404,7 +514,7 @@ const ProjectDetail = () => {
                             backgroundColor: "#fde3cf",
                           }}
                         >
-                          {detail.assigness?.map((member) => (
+                          {detail?.assigness?.map((member) => (
                             <Tooltip title={member.name} placement="top">
                               <Avatar src={member.avatar} alt={member.name} />
                             </Tooltip>
@@ -418,7 +528,11 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
-        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
+        <div
+          className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item"
+          onDragOver={(event) => handleDragOver(event)}
+          onDrop={(event) => handleDrop(event, "IN PROGRESS")}
+        >
           <p>
             <span className="title-detail item3">IN PROGRESS</span>
           </p>
@@ -426,25 +540,29 @@ const ProjectDetail = () => {
             {filterTasksByStatus("3")?.map((task) => (
               <div
                 className="task-detail "
-                key={task.alias}
+                key={task?.alias}
                 style={{ cursor: "pointer" }}
               >
-                {task.lstTaskDeTail?.map((detail, index) => (
+                {task?.lstTaskDeTail?.map((detail, index) => (
                   <div
                     onClick={() => getTaskDetailApi(detail.taskId)}
                     className="task-detail-item bg-white"
                     key={index}
+                    draggable="true"
+                    onDragStart={(event) =>
+                      handleDragStart(event, detail.taskId)
+                    }
                   >
-                    <p className="m-0">{detail.taskName}</p>
+                    <p className="m-0">{detail?.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
-                        {checkTaskType(detail.taskTypeDetail.taskType)}
+                        {checkTaskType(detail?.taskTypeDetail?.taskType)}
                         <span
                           className={checkPriority(
-                            detail.priorityTask.priority
+                            detail?.priorityTask?.priority
                           )}
                         >
-                          {detail.priorityTask.priority}
+                          {detail?.priorityTask?.priority}
                         </span>
                       </div>
                       <div className="task-right">
@@ -456,7 +574,7 @@ const ProjectDetail = () => {
                             backgroundColor: "#fde3cf",
                           }}
                         >
-                          {detail.assigness?.map((member) => (
+                          {detail?.assigness?.map((member) => (
                             <Tooltip title={member.name} placement="top">
                               <Avatar src={member.avatar} alt={member.name} />
                             </Tooltip>
@@ -470,7 +588,11 @@ const ProjectDetail = () => {
             ))}
           </div>
         </div>
-        <div className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item">
+        <div
+          className="col mb-4 col-lg-3 col-md-12 col-sm-12 col-12 project-item"
+          onDragOver={(event) => handleDragOver(event)}
+          onDrop={(event) => handleDrop(event, "DONE")}
+        >
           <p>
             <span className="title-detail item4">DONE</span>
           </p>
@@ -481,22 +603,26 @@ const ProjectDetail = () => {
                 key={task.alias}
                 style={{ cursor: "pointer" }}
               >
-                {task.lstTaskDeTail?.map((detail, index) => (
+                {task?.lstTaskDeTail?.map((detail, index) => (
                   <div
                     onClick={() => getTaskDetailApi(detail.taskId)}
                     className="task-detail-item bg-white"
                     key={index}
+                    draggable="true"
+                    onDragStart={(event) =>
+                      handleDragStart(event, detail.taskId)
+                    }
                   >
-                    <p className="m-0">{detail.taskName}</p>
+                    <p className="m-0">{detail?.taskName}</p>
                     <div className="task-bottom">
                       <div className="task-left">
-                        {checkTaskType(detail.taskTypeDetail.taskType)}
+                        {checkTaskType(detail?.taskTypeDetail?.taskType)}
                         <span
                           className={checkPriority(
-                            detail.priorityTask.priority
+                            detail?.priorityTask?.priority
                           )}
                         >
-                          {detail.priorityTask.priority}
+                          {detail?.priorityTask?.priority}
                         </span>
                       </div>
                       <div className="task-right">
@@ -508,7 +634,7 @@ const ProjectDetail = () => {
                             backgroundColor: "#fde3cf",
                           }}
                         >
-                          {detail.assigness?.map((member) => (
+                          {detail?.assigness?.map((member) => (
                             <Tooltip title={member.name} placement="top">
                               <Avatar src={member.avatar} alt={member.name} />
                             </Tooltip>
