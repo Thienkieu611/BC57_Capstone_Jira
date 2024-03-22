@@ -211,3 +211,9 @@ export const deleteTaskApiAction = (taskId) => {
     }
   };
 };
+
+export const updateArrProjectDetailApiAction = (newArrProjectDetail) => {
+  return (dispatch) => {
+    dispatch(setProjectDetailAction(newArrProjectDetail));
+  };
+};
