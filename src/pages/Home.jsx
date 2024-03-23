@@ -9,6 +9,7 @@ import {
   Modal,
   Popover,
   AutoComplete,
+  Spin,
 } from "antd";
 import {
   EditOutlined,
@@ -34,9 +35,19 @@ const Home = () => {
 
   const dispatch = useDispatch();
 
+  const [loading, setLoading] = useState(true);
+
   const getAllProjectApi = async () => {
-    const action = getAllProjectApiAction();
-    dispatch(action);
+    try {
+      const action = getAllProjectApiAction();
+      dispatch(action);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2500);
+    }
   };
 
   const deleteProjectApi = async (projectId) => {
@@ -177,47 +188,51 @@ const Home = () => {
   ];
 
   return (
-    <div
-      style={
-        windowSize.widthWindow < 768
-          ? {
-              margin: "0 auto",
-              overflowX: "auto",
-            }
-          : {}
-      }
-      className="container"
-    >
-      <h2 className="text-center py-5">Projects Management</h2>
-      <div className="project-top d-flex justify-content-between mb-4">
-        <Search
-          className="search-project"
-          placeholder="Search project name"
-          allowClear
-          onChange={handleSearchChange}
-          style={{
-            width: 250,
-          }}
-        />
-        <NavLink
-          to={"/projects/createProject"}
-          className="create-task btn btn-primary"
+    <div>
+      <Spin spinning={loading} size="large">
+        <div
+          style={
+            windowSize.widthWindow < 768
+              ? {
+                  margin: "0 auto",
+                  overflowX: "auto",
+                }
+              : {}
+          }
+          className="container"
         >
-          Create Project
-        </NavLink>
-      </div>
+          <h2 className="text-center py-5">Projects Management</h2>
+          <div className="project-top d-flex justify-content-between mb-4">
+            <Search
+              className="search-project"
+              placeholder="Search project name"
+              allowClear
+              onChange={handleSearchChange}
+              style={{
+                width: 250,
+              }}
+            />
+            <NavLink
+              to={"/projects/createProject"}
+              className="create-task btn btn-primary"
+            >
+              Create Project
+            </NavLink>
+          </div>
 
-      <div
-        style={
-          windowSize.widthWindow < 768
-            ? {
-                overflowX: "auto",
-              }
-            : {}
-        }
-      >
-        <Table columns={columns} dataSource={searchResult} />
-      </div>
+          <div
+            style={
+              windowSize.widthWindow < 768
+                ? {
+                    overflowX: "auto",
+                  }
+                : {}
+            }
+          >
+            <Table columns={columns} dataSource={searchResult} />
+          </div>
+        </div>
+      </Spin>
     </div>
   );
 };

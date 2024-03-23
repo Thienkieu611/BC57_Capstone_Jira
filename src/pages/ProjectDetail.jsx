@@ -32,6 +32,7 @@ import {
   SnippetsFilled,
   DeleteOutlined,
   CloseOutlined,
+  ExclamationCircleFilled,
 } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import useResponsive from "./../hook/useResponsive.js";
@@ -39,21 +40,21 @@ import { https } from "../utils/config.js";
 
 const ProjectDetail = () => {
   const windowSize = useResponsive();
-  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  // const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [taskName, setTaskName] = useState("");
   const [taskType, setTaskType] = useState("bug");
 
-  const handleCreate = () => {
-    setIsCreatingTask(false);
-    setTaskName("");
-    setTaskType("bug");
-  };
+  // const handleCreate = () => {
+  //   setIsCreatingTask(false);
+  //   setTaskName("");
+  //   setTaskType("bug");
+  // };
 
-  const handleCancelCreateTask = () => {
-    setIsCreatingTask(false);
-    setTaskName("");
-    setTaskType("bug"); // Reset task type to default
-  };
+  // const handleCancelCreateTask = () => {
+  //   setIsCreatingTask(false);
+  //   setTaskName("");
+  //   setTaskType("bug"); // Reset task type to default
+  // };
 
   // set modal add member
   const [isModalOpen, setIsModalOpen] = useState({
@@ -67,10 +68,7 @@ const ProjectDetail = () => {
       [modalName]: true,
     });
   };
-  const handleDelete = async (taskId) => {
-    const action = deleteTaskApiAction(taskId);
-    dispatch(action);
-  };
+
   const handleCancel = (modalName) => {
     setIsModalOpen({
       ...isModalOpen,
@@ -117,25 +115,38 @@ const ProjectDetail = () => {
     getAllStatusApi();
   }, []);
 
-  const status = arrStatus.map((sta) => sta.statusName);
+  const [taskDeleted, setTaskDeleted] = useState(false);
 
-  const [selectedStatus, setSelectedStatus] = useState("");
-
-  const handleStatusChange = (value) => {
-    setSelectedStatus(value);
+  const deleteTaskApi = async (taskId) => {
+    const action = await deleteTaskApiAction(taskId);
+    dispatch(action);
+    setTaskDeleted(true);
   };
 
-  const [selectedPriority, setSelectedPriority] = useState("high");
-
-  const handlePriorityChange = (value) => {
-    setSelectedPriority(value);
+  const handleDelete = async (taskId) => {
+    Modal.confirm({
+      title: `Are you sure to delete this task?`,
+      icon: <ExclamationCircleFilled />,
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancle",
+      async onOk() {
+        await deleteTaskApi(taskId);
+        setTaskDeleted(true);
+        handleCancel("modalViewTaskDetail");
+      },
+      onCancel() {
+        setTaskDeleted(false);
+      },
+      width: 500,
+    });
   };
-
-  const [estimate, setEstimate] = useState(arrTaskDetail.originalEstimate);
-
-  const handleEstimateChange = (e) => {
-    setEstimate(e.target.value);
-  };
+  useEffect(() => {
+    if (taskDeleted) {
+      getProjectDetailApi(arrProjectDetail.id);
+      setTaskDeleted(false);
+    }
+  }, [taskDeleted, arrProjectDetail]);
 
   const checkTaskType = (taskType) => {
     if (taskType === "bug") {
@@ -182,7 +193,18 @@ const ProjectDetail = () => {
         return "Lowest";
     }
   };
-  const hello = checkSelectPriority(arrTaskDetail.priorityId);
+  const checkSelectPriorityName = (priorityName) => {
+    switch (priorityName) {
+      case "High":
+        return 1;
+      case "Medium":
+        return 2;
+      case "Low":
+        return 3;
+      case "Lowest":
+        return 4;
+    }
+  };
 
   //add member
   const [remainingUsers, setRemainingUsers] = useState([]);
@@ -315,33 +337,98 @@ const ProjectDetail = () => {
     setRemainingUsers(filteredUsers);
   }, [searchValue, arrUser]);
 
-  const [estimatedHours, setEstimatedHours] = useState(
+  //set update task detail
+  const [isEditable, setIsEditable] = useState(false);
+  const [contentDes, setContentDes] = useState(arrTaskDetail.description);
+  const [addComment, setAddComment] = useState();
+  const [selectedStatus, setSelectedStatus] = useState(
+    checkStatus(arrTaskDetail.statusId)
+  );
+  const [selectedPriority, setSelectedPriority] = useState(
+    checkSelectPriority(arrTaskDetail.priorityId)
+  );
+
+  const [estimate, setEstimate] = useState(arrTaskDetail.originalEstimate);
+
+  const [trackingRemaining, setTrackingRemaining] = useState(
     arrTaskDetail.timeTrackingRemaining
   );
-  const [hoursSpent, setHoursSpent] = useState(arrTaskDetail.timeTrackingSpent);
-  const [sliderValue, setSliderValue] = useState(0);
+  const [trackingSpent, setTrackingSpent] = useState(
+    arrTaskDetail.timeTrackingSpent
+  );
+  const [sliderValue, setSliderValue] = useState(
+    arrTaskDetail.timeTrackingSpent
+  );
+
+  const handleSelectChange = (type, value) => {
+    if (type === "status") {
+      setSelectedStatus(value);
+    } else if (type === "priority") {
+      setSelectedPriority(value);
+    }
+  };
+
+  const handleTimeTracking = (value, setTitle) => {
+    setTitle(value);
+    updateSliderValue();
+  };
+
+  const updateSliderValue = () => {
+    const total = estimate;
+    const spentPercentage = (trackingSpent / total) * 100;
+    // const remainingPercentage = 100 - spentPercentage;
+    const spentValue = (spentPercentage / 100) * total;
+    // const remainingValue = (remainingPercentage / 100) * total;
+
+    setSliderValue(spentValue);
+  };
+
+  const handleEditorClick = () => {
+    setIsEditable(true);
+  };
+
+  const handleEditorBlur = () => {
+    setIsEditable(false);
+  };
+
+  const handleEditorChange = (e, setTitle) => {
+    setTitle(e.target.value);
+  };
 
   useEffect(() => {
-    setEstimatedHours(arrTaskDetail.timeTrackingRemaining);
-    setHoursSpent(arrTaskDetail.timeTrackingSpent);
+    setContentDes(arrTaskDetail.description);
+    setSelectedStatus(checkStatus(arrTaskDetail.statusId));
+    setSelectedPriority(checkSelectPriority(arrTaskDetail.priorityId));
+    setEstimate(arrTaskDetail.originalEstimate);
+    setTrackingRemaining(arrTaskDetail.timeTrackingRemaining);
+    setTrackingSpent(arrTaskDetail.timeTrackingSpent);
     setSliderValue(arrTaskDetail.timeTrackingSpent);
   }, [arrTaskDetail]);
-  const timeEst = (value) => {
-    setEstimatedHours(value);
+  useEffect(() => {
     updateSliderValue();
+  }, [trackingSpent]);
+
+  const updateTaskApi = async (updateTask) => {
+    const action = updateTaskApiAction(updateTask);
+    dispatch(action);
   };
 
-  const timeSpent = (value) => {
-    setHoursSpent(value);
-    updateSliderValue();
-  };
+  const hanleSaveUpdateTask = async (updateTask) => {
+    try {
+      const updatedTask = {
+        ...updateTask,
+        description: contentDes || "",
+        statusId: selectedStatus ? checkStatusName(selectedStatus) : "",
+        originalEstimate: estimate || 0,
+        timeTrackingSpent: trackingSpent || 0,
+        timeTrackingRemaining: trackingRemaining || 0,
+        priorityId: checkSelectPriorityName(selectedPriority) || 0,
+      };
 
-  // const remainHours = estimatedHours - hoursSpent;
-  const disabled = estimatedHours === 0;
-  const updateSliderValue = () => {
-    const newValue = hoursSpent + estimatedHours;
-
-    setSliderValue(newValue);
+      await updateTaskApi(updatedTask);
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   return (
@@ -806,19 +893,31 @@ const ProjectDetail = () => {
           width={1000}
           maskClosable={false}
           style={{ top: "50" }}
-          footer=""
+          footer={
+            <div className="">
+              <hr className="mx-3" />
+              <button
+                className="btn btn-success px-4 me-3"
+                onClick={() => {
+                  hanleSaveUpdateTask(arrTaskDetail);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          }
         >
           <div className="">
             <div className="d-flex justify-content-between align-items-start">
               <h6>
-                {/* {checkTaskType(arrTaskDetail?.taskTypeDetail?.taskType)}
+                {checkTaskType(arrTaskDetail?.taskTypeDetail?.taskType)}
                 {arrTaskDetail?.taskTypeDetail?.taskType
                   .charAt(0)
                   .toUpperCase() +
-                  arrTaskDetail?.taskTypeDetail.taskType.slice(1)} */}
+                  arrTaskDetail?.taskTypeDetail?.taskType.slice(1)}
               </h6>
               <DeleteOutlined
-                onClick={() => handleDelete(arrTaskDetail.taskId)}
+                onClick={() => handleDelete(arrTaskDetail?.taskId)}
                 className="text-danger me-4 fs-5"
               />
             </div>
@@ -837,24 +936,50 @@ const ProjectDetail = () => {
                 <div>
                   <p>Description</p>
                   <div>
-                    <p className="rounded border p-2">
-                      {arrTaskDetail.description}
+                    <p className="">
+                      <Input
+                        placeholder="Add a description..."
+                        value={contentDes}
+                        onClick={handleEditorClick}
+                        onBlur={handleEditorBlur}
+                        onChange={(e) => {
+                          handleEditorChange(e, setContentDes);
+                        }}
+                      />
                     </p>
                   </div>
                 </div>
                 <div>
                   <p>Comments</p>
                   <div className="d-flex align-items-baseline">
-                    <p className="m-0">
+                    <p className="m-0 py-2">
                       <img
-                        className="rounded-circle w-50"
+                        style={{ width: "55%" }}
+                        className="rounded-circle"
                         src={userLogin.avatar}
                         alt="..."
                       />
                     </p>
-                    <p className="rounded border w-100 p-2">Add comment</p>
+                    <p className="w-100">
+                      <Input
+                        className="py-2"
+                        placeholder="Add a comment..."
+                        value={addComment}
+                        onClick={handleEditorClick}
+                        onBlur={handleEditorBlur}
+                        onChange={(e) => {
+                          handleEditorChange(e, setAddComment);
+                        }}
+                      />
+                    </p>
                   </div>
-                  <div style={{ maxHeight: "170px", overflowY: "auto" }}>
+                  <div
+                    style={{
+                      maxHeight: "170px",
+                      overflowY: "auto",
+                      marginTop: "10px",
+                    }}
+                  >
                     {arrTaskDetail?.lstComment?.map((comment) => (
                       <div>
                         <div className="d-flex align-items-baseline">
@@ -886,13 +1011,14 @@ const ProjectDetail = () => {
                 style={{ width: windowSize.widthWindow < 768 ? "" : "40%" }}
               >
                 <Select
-                  defaultValue={checkStatus(arrTaskDetail.statusId)}
-                  value={checkStatus(arrTaskDetail.statusId)}
+                  value={selectedStatus}
                   className="mb-3"
                   style={{
                     width: windowSize.widthWindow < 768 ? "100%" : 250,
                   }}
-                  onChange={handleStatusChange}
+                  onChange={(value) => {
+                    handleSelectChange("status", value);
+                  }}
                   options={arrStatus.map((sta) => ({
                     value: sta.statusName,
                     label: sta.statusName,
@@ -942,17 +1068,14 @@ const ProjectDetail = () => {
                               <p className="me-4">Priority</p>
                               <div>
                                 <Select
-                                  defaultValue={checkSelectPriority(
-                                    arrTaskDetail.priorityId
-                                  )}
-                                  value={checkSelectPriority(
-                                    arrTaskDetail.priorityId
-                                  )}
+                                  value={selectedPriority}
                                   className="mb-3"
                                   style={{
                                     width: 110,
                                   }}
-                                  onChange={handlePriorityChange}
+                                  onChange={(value) => {
+                                    handleSelectChange("priority", value);
+                                  }}
                                   options={[
                                     {
                                       value: "high",
@@ -977,12 +1100,14 @@ const ProjectDetail = () => {
                             <div className="d-flex">
                               <p className="me-3">Estimate</p>
                               <div>
-                                <Space.Compact>
-                                  <Input
-                                    value={`${arrTaskDetail.originalEstimate}m`}
-                                    onChange={handleEstimateChange}
-                                  ></Input>
-                                </Space.Compact>
+                                <Input
+                                  value={estimate}
+                                  onClick={handleEditorClick}
+                                  onBlur={handleEditorBlur}
+                                  onChange={(e) => {
+                                    handleEditorChange(e, setEstimate);
+                                  }}
+                                />
                               </div>
                             </div>
 
@@ -992,38 +1117,44 @@ const ProjectDetail = () => {
                               </label>
                               <div className="d-flex">
                                 <div className="col">
-                                  <InputNumber
-                                    id="hoursSpent"
+                                  <Input
+                                    id="timeTrackingspent"
                                     className="d-block w-100 fs-6"
-                                    min={0}
-                                    value={hoursSpent}
-                                    onChange={timeSpent}
+                                    value={trackingSpent}
+                                    onChange={(e) => {
+                                      handleTimeTracking(
+                                        e.target.value,
+                                        setTrackingSpent
+                                      );
+                                    }}
+                                    onClick={handleEditorClick}
+                                    onBlur={handleEditorBlur}
                                   />
                                   <label className="mb-2">Time spent</label>
                                 </div>
-                                <div></div>
+
                                 <div className="col ms-2">
-                                  <InputNumber
+                                  <Input
+                                    id="timeTrackingRemaining"
                                     className="d-block w-100 fs-6"
-                                    id="estimatedHours"
-                                    min={0}
-                                    value={estimatedHours}
-                                    onChange={timeEst}
+                                    value={trackingRemaining}
+                                    onChange={(e) => {
+                                      handleTimeTracking(
+                                        e.target.value,
+                                        setTrackingRemaining
+                                      );
+                                    }}
+                                    onClick={handleEditorClick}
+                                    onBlur={handleEditorBlur}
                                   />
                                   <label className="mb-2">Time remaining</label>
                                 </div>
                               </div>
                               <div className="px-2 mt-2">
-                                <Slider
-                                  max={"5"}
-                                  value={sliderValue}
-                                  disabled={disabled}
-                                />
+                                <Slider max={estimate} value={sliderValue} />
                                 <div className="d-flex justify-content-between">
-                                  <p>{hoursSpent}m logged</p>
-                                  <p>
-                                    {estimatedHours - hoursSpent}m remaining
-                                  </p>
+                                  <p>{trackingSpent}m logged</p>
+                                  <p>{trackingRemaining}m remaining</p>
                                 </div>
                               </div>
                             </div>
