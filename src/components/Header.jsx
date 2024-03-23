@@ -68,7 +68,9 @@ const Header = () => {
   const profilesMenu = (
     <Menu>
       <Menu.Item key="0" className="py-2 px-3" disabled="true">
-        <a className={"text-decoration-none"}>{userLogin.name.toUpperCase()}</a>
+        <a className={"text-decoration-none"}>
+          {userLogin?.name?.toUpperCase()}
+        </a>
       </Menu.Item>
       <Menu.Item key="1" className="py-2 px-3">
         <NavLink className={"text-decoration-none"} to="my-profile">

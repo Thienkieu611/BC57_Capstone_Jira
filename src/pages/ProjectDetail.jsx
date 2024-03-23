@@ -409,7 +409,7 @@ const ProjectDetail = () => {
   }, [trackingSpent]);
 
   const updateTaskApi = async (updateTask) => {
-    const action = updateTaskApiAction(updateTask);
+    const action = await updateTaskApiAction(updateTask);
     dispatch(action);
   };
 

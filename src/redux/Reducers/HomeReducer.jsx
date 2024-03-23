@@ -238,7 +238,7 @@ export const updateTaskApiAction = (updateTask) => {
 
       dispatch(action);
     } catch (error) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === 403) {
         message.error("Bạn không được chỉ định để thay đổi tác vụ này !");
       }
     }
