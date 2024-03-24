@@ -74,9 +74,28 @@ export const loginApiAction = (userLogin) => {
       dispatch(action);
       window.location.href = "/projects";
     } catch (error) {
-      if (error.response?.status === 404) {
-        // alert("Email or password is incorrect!");
-        message.error('Email or password is incorrect!')
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 404) {
+          // Email or password is incorrect
+          message.error('Email or password is incorrect!');
+          window.location.href = "/login";
+        } else if (status === 401) {
+          // Unauthorized access
+          message.error('Unauthorized access!');
+          window.location.href = "/login";
+        } else if (status === 500) {
+          // Internal server error
+          message.error('Internal server error. Please try again later.');
+          window.location.href = "/login";
+        } else {
+          // Other errors
+          message.error('An error occurred. Please try again later.');
+          window.location.href = "/login";
+        }
+      } else {
+        // Network error or other unexpected errors
+        message.error('An unexpected error occurred. Please try again later.');
         window.location.href = "/login";
       }
     }
@@ -198,7 +217,7 @@ export const deleteUserApiAction = (userId) => {
 
     }
     catch (error) {
-      console.error("Error deleting user:", error);
+      message.error("Error deleting user:", error);
     }
   }
 }

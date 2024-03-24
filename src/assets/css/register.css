@@ -18,11 +18,11 @@ body {
     margin-top: 100px;
   }
 }
-.login-template .outlet .login-page .login-form .register-account .register-link {
+.login-template .outlet .register-page .register-form .login-account .login-link {
   position: relative;
   text-decoration: none;
 }
-.login-template .outlet .login-page .login-form .register-account .register-link::after {
+.login-template .outlet .register-page .register-form .login-account .login-link::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -33,18 +33,18 @@ body {
   background-color: #1c4ed8;
   transition: width 0.3s linear;
 }
-.login-template .outlet .login-page .login-form .register-account .register-link:hover::after {
+.login-template .outlet .register-page .register-form .login-account .login-link:hover::after {
   width: 100%;
 }
 @media only screen and (min-width: 1500px) {
-  .login-template .login-form {
+  .login-template .register-form {
     padding-left: 100px;
     padding-right: 100px;
   }
 }
 @media only screen and (min-width: 1800px) {
-  .login-template .login-form {
+  .login-template .register-form {
     padding-left: 200px;
     padding-right: 200px;
   }
-}/*# sourceMappingURL=login.css.map */
+}/*# sourceMappingURL=register.css.map */
