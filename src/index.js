@@ -25,10 +25,7 @@ import CreateTask from "./pages/CreateTask.jsx";
 import "./assets/sass/index.scss";
 import UpdateProfile from "./pages/UpdateProfile.jsx";
 import UserList from "./pages/UserList.jsx";
-import UserManagement from "./pages/UserManagement.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
-import { logoutApiAction } from "./redux/Reducers/UserReducer.jsx";
-import { USER_LOGIN } from "./utils/config.js";
 
 //history giúp chuyển hướng trang
 export const history = createBrowserHistory();
@@ -46,7 +43,7 @@ root.render(
             element={<UpdateProject />}
           ></Route>
           <Route path="createTask" element={<CreateTask />}></Route>
-          <Route path="user-management" element={<UserManagement />}></Route>
+
           <Route
             path="projectDetail/:projectId"
             element={<ProjectDetail />}
