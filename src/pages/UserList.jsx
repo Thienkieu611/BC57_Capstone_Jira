@@ -21,9 +21,14 @@ const UserList = () => {
     dispatch(action);
   };
 
+  const handleUpdate = () => {
+    getAllUser() //re-render the user list after any user detail is updated
+  }
+
   useEffect(() => {
     getAllUser();
-  }, [userArr]);
+    console.log("user array",userArr)
+  }, []);
 
   //searching and sorting on the table
   const [sortedInfo, setSortedInfo] = useState({});
@@ -197,7 +202,7 @@ const UserList = () => {
       render: (text, record, index) => {
         return (
           <div className="d-flex flex-column flex-md-row">
-            <EditUserModal record={record}/>
+            <EditUserModal record={record} handleUpdate={handleUpdate}/>
             <div className="mt-3 mt-md-0 mx-0 mx-md-3">
             <Popconfirm
               title="Delete the user"

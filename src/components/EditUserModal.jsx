@@ -82,7 +82,7 @@ const EditUserModal = (props) => {
             const action = editUserApiAction(values);
             dispatch(action)
             setModalOpen(false)
-            
+            props.handleUpdate() 
         },
     })
   return (

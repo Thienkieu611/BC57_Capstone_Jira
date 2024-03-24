@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { registerApiAction } from '../redux/Reducers/UserReducer';
 import { UserOutlined, LockOutlined, CheckCircleOutlined, PhoneOutlined} from '@ant-design/icons';
 import { Input } from 'antd';
+import "../assets/sass/register.scss"
 
 
 const Register = () => {
@@ -56,9 +57,9 @@ const Register = () => {
     }
   })
   return (
-    <div className='container px-5'>
+    <div className='container px-5 register-page'>
       <h2 className="text-center mt-5">Register with JiraClone</h2>
-      <form className='mt-5' onSubmit={registerForm.handleSubmit}>
+      <form className='mt-5 register-form' onSubmit={registerForm.handleSubmit}>
       <div className="form-group">
           <Input size="large"
             id="name"
@@ -120,7 +121,7 @@ const Register = () => {
         </div>
         <div className="form-group text-center login-account">
               <span>If you already have an account? </span>
-              <NavLink to={"/login"}>Login now</NavLink>
+              <NavLink className={"login-link"} to={"/login"}>Login now</NavLink>
             </div>
       </form>
     </div>

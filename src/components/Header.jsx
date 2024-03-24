@@ -79,13 +79,13 @@ const Header = () => {
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item key="2" className="py-2 px-3">
-        <a
+        <NavLink
           className={"text-decoration-none"}
           to={"/login"}
           onClick={logoutUser}
         >
           Logout
-        </a>
+        </NavLink>
       </Menu.Item>
     </Menu>
   );
