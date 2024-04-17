@@ -15,7 +15,7 @@ const CreateTask = () => {
   const [priority, setPriority] = useState([]);
   const [taskType, setTaskType] = useState([]);
   const [assigner, setAssigner] = useState([]);
-  const [idProjectFirst, setIdProjectFirst] = useState();
+  const [idProjectFirst, setIdProjectFirst] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [estimatedHours, setEstimatedHours] = useState(0);
   const [hoursSpent, setHoursSpent] = useState(0);
@@ -75,7 +75,7 @@ const CreateTask = () => {
   };
 
   useEffect(() => {
-    if (idProjectFirst) {
+    if (idProjectFirst != 0) {
       createTask
         .getUserById(idProjectFirst)
         .then((res) => {

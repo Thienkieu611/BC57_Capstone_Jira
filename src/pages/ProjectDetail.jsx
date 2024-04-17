@@ -210,6 +210,20 @@ const ProjectDetail = () => {
   const remainHours = estimatedHours - hoursSpent;
   const disabled = estimatedHours === 0;
 
+  console.log(arrProjectDetail.members);
+
+  const options = [];
+  {
+    arrProjectDetail?.members?.map((item, index) => {
+      return options.push({
+        label: item.name,
+        value: item.userId,
+      });
+    });
+  }
+
+  console.log(options);
+
   return (
     <div className="project-detail container mt-4">
       <p>
@@ -754,6 +768,26 @@ const ProjectDetail = () => {
                               <p className="me-2">Assigness</p>
 
                               <div>
+                                <Space
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                  direction="vertical"
+                                >
+                                  <Select
+                                    mode="multiple"
+                                    allowClear
+                                    style={{
+                                      width: "500px",
+                                    }}
+                                    // onChange={handleChange2}
+                                    options={options}
+                                    value={arrTaskDetail?.assigness}
+                                  />
+                                </Space>
+                              </div>
+
+                              {/* <div>
                                 {arrTaskDetail?.assigness?.map((ass) => (
                                   <div className="d-flex align-items-center mb-2 border p-2 rounded ">
                                     <p className="m-0">
@@ -775,7 +809,7 @@ const ProjectDetail = () => {
                                     <CloseOutlined />
                                   </div>
                                 ))}
-                              </div>
+                              </div> */}
                             </div>
                             <div className="d-flex">
                               <p className="me-4">Priority</p>
