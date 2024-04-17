@@ -14,7 +14,6 @@ import EditUserModal from "../components/EditUserModal";
 
 const UserList = () => {
   const { userArr } = useSelector((state) => state.userReducer);
-  console.log(userArr);
   const dispatch = useDispatch();
 
   const getAllUser = async () => {
@@ -22,9 +21,14 @@ const UserList = () => {
     dispatch(action);
   };
 
+  const handleUpdate = () => {
+    getAllUser() //re-render the user list after any user detail is updated
+  }
+
   useEffect(() => {
     getAllUser();
-  }, [userArr]);
+    console.log("user array",userArr)
+  }, []);
 
   //searching and sorting on the table
   const [sortedInfo, setSortedInfo] = useState({});
@@ -35,7 +39,6 @@ const UserList = () => {
 
   //delete confirm
   const confirm = (userId) => {
-    console.log("success", userId);
     // Dispatch the action with the userId
     dispatch(deleteUserApiAction(userId));
   };
@@ -61,8 +64,8 @@ const UserList = () => {
 
   const clearAll = () => {
     setSortedInfo({});
-    setSearchText("");
-    console.log("clear all");
+  setSearchText(""); 
+  handleSearch([], () => {}, searchedColumn);
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -105,7 +108,8 @@ const UserList = () => {
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => {clearFilters && handleReset(clearFilters);
+              handleSearch(selectedKeys, confirm, dataIndex)}}
             size="small"
             style={{
               width: 90,
@@ -160,7 +164,7 @@ const UserList = () => {
       title: "No.",
       dataIndex: "no",
       name: "no",
-      render: (text, record, index) => <p>{index + 1}</p>,
+      render: (text, record, index) => <p>{userArr.indexOf(record) + 1}</p>,
     },
     {
       title: "Name",
@@ -198,7 +202,7 @@ const UserList = () => {
       render: (text, record, index) => {
         return (
           <div className="d-flex flex-column flex-md-row">
-            <EditUserModal record={record}/>
+            <EditUserModal record={record} handleUpdate={handleUpdate}/>
             <div className="mt-3 mt-md-0 mx-0 mx-md-3">
             <Popconfirm
               title="Delete the user"
@@ -220,6 +224,7 @@ const UserList = () => {
       },
     },
   ];
+  
 
   return (
     <div className="container">

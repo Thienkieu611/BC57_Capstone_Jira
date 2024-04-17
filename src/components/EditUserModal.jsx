@@ -14,7 +14,6 @@ import { editUserApiAction } from "../redux/Reducers/UserReducer";
 
 
 const EditUserModal = (props) => {
-    console.log("props", props.record)
     const userDetail = props.record
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -83,7 +82,7 @@ const EditUserModal = (props) => {
             const action = editUserApiAction(values);
             dispatch(action)
             setModalOpen(false)
-            
+            props.handleUpdate() 
         },
     })
   return (

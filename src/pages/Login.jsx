@@ -13,6 +13,7 @@ import {
 import { Input, Button } from "antd";
 import LoginUsingFacebook from "./LoginUsingFacebook";
 import { TOKEN, USER_LOGIN } from "../utils/config";
+import "../assets/sass/login.scss"
 
 const Login = () => {
   localStorage.removeItem(TOKEN);
@@ -81,10 +82,10 @@ const Login = () => {
             Login
           </button>
         </div>
-        <div className="form-group login-facebook text-center ">
+        <div className="form-group login-facebook text-center">
             Or you can continue with <LoginUsingFacebook/>
         </div>
-        <div className="form-group text-center register-account">
+        <div className="form-group text-center register-account mt-3">
           <span>Don't have an account yet? </span>
           <NavLink className={"register-link"} to={"/register"}>Register here</NavLink>
         </div>

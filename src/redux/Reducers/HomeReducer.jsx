@@ -199,7 +199,6 @@ export const deleteTaskApiAction = (taskId) => {
         `/api/Project/removeTask?taskId=${taskId}
         `
       );
-
       const action = deleteTaskAction(res.data.content);
       dispatch(action);
 
@@ -207,6 +206,40 @@ export const deleteTaskApiAction = (taskId) => {
     } catch (error) {
       if (error.response?.status === 403) {
         message.error("Bạn không được phép xoá dữ liệu của người khác !");
+      }
+    }
+  };
+};
+
+export const updateArrProjectDetailApiAction = (newArrProjectDetail) => {
+  return (dispatch) => {
+    dispatch(setProjectDetailAction(newArrProjectDetail));
+  };
+};
+
+export const updateTaskApiAction = (updateTask) => {
+  return async (dispatch) => {
+    console.log(updateTask);
+    try {
+      const res = await https.post("/api/Project/updateTask", {
+        listUserAsign: updateTask.listUserAsign || [],
+        taskId: updateTask.taskId,
+        taskName: updateTask.taskName || "",
+        description: updateTask.description || "",
+        statusId: updateTask.statusId || "",
+        originalEstimate: updateTask.originalEstimate || 0,
+        timeTrackingSpent: updateTask.timeTrackingSpent || 0,
+        timeTrackingRemaining: updateTask.timeTrackingRemaining || 0,
+        projectId: updateTask.projectId || "",
+        typeId: updateTask.typeId || 0,
+        priorityId: updateTask.priorityId || 0,
+      });
+      const action = setTaskDetailAction(res.data.content);
+
+      dispatch(action);
+    } catch (error) {
+      if (error.response?.status === 403) {
+        message.error("Bạn không được chỉ định để thay đổi tác vụ này !");
       }
     }
   };
