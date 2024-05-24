@@ -368,6 +368,25 @@ const ProjectDetail = () => {
     }
   };
 
+  // const [taskID, setTaskID] = useState();
+
+  console.log(arrTaskDetail);
+
+  const postComment = async () => {
+    if (arrTaskDetail) {
+      // console.log(arrTaskDetail?.lstComment[0].id);
+      // setTaskID(arrTaskDetail.assigness.taskId);
+      await https.post("/api/Comment/insertComment", {
+        taskId: arrTaskDetail?.taskId,
+        contentComment: addComment,
+      });
+    }
+  };
+
+  const deleteComment = async (id) => {
+    await https.delete(`/api/Comment/deleteComment?idComment=${id}`);
+  };
+
   const handleTimeTracking = (value, setTitle) => {
     setTitle(value);
     updateSliderValue();
@@ -987,6 +1006,15 @@ const ProjectDetail = () => {
                       />
                     </p>
                   </div>
+                  <div className="d-flex justify-content-end">
+                    <button
+                      onClick={() => postComment()}
+                      className="btn btn-primary"
+                    >
+                      Save
+                    </button>
+                    <button className="btn btn-warning mx-2">Cancel</button>
+                  </div>
                   <div
                     style={{
                       maxHeight: "170px",
@@ -1011,7 +1039,13 @@ const ProjectDetail = () => {
                             </p>
                             <div className="text-secondary mt-3">
                               <span className="me-3">Edit</span>
-                              <span>Delete</span>
+                              <span
+                                onClick={() => {
+                                  deleteComment(comment.id);
+                                }}
+                              >
+                                Delete
+                              </span>
                             </div>
                           </div>
                         </div>
